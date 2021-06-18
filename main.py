@@ -1,1 +1,3 @@
-import core.web
+import core.web as web
+
+web.run()

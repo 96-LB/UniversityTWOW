@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head land="en">
+        <title>UniversityTWOW</title>
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/base.css')}}">
+{%- if self.css() -%}
+    {%- for file in self.css().split('|') %}
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/' + file)}}">
+    {%- endfor -%}
+{%- endif -%}
+        <script src="{{url_for('static', filename='js/base.js')}}"></script>
+{%- if self.js() -%}
+    {%- for file in self.js().split('|') %}
+        <script src="{{url_for('static', filename='js/' + file)}}"></script>
+    {%- endfor -%}
+{%- endif %}
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>
