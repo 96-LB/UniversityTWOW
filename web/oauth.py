@@ -18,4 +18,4 @@ def logout():
 @app.route('/callback')
 def callback():
     discord.callback()
-    return redirect(url_for('application', page=1), 303)
+    return redirect(url_for('application'), 303)

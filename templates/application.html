@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+{% if submitted %}
+<div>
+    Thank you for applying to UniversityTWOW. If you need to edit your application or submit additional materials, please contact the Admissions Office.
+</div>
+{% elif next_page is none %}
+<div>
+    No application was found on file.
+</div>
+<div>
+    Click <a href="application/1">here</a> to start your application.
+</div>
+{% elif finished %}
+<div>
+    Are you ready to submit your first-year application to UniversityTWOW's class of 2021?
+</div>
+<form method="POST">
+    <fieldset>
+        <legend>Submit</legend>
+        <div>
+            <input type="checkbox" id="application_tos" required>
+            <label for="application_tos">
+                I have read and agree to the Terms of Service and Privacy Policy
+            </label>
+        </div>
+        <div>
+            <input type="checkbox" id="application_truth" required>
+            <label for="application_truth">
+                I can verify that all the information in this application is, to the best of my knowledge, factual and complete
+            </label>
+        </div>
+        <div>
+            <input type="checkbox" id="application_review" required>
+            <label for="application_review">
+                I have reviewed my application and understand that I cannot edit after submission
+            </label>
+        </div>
+       <input type="submit">
+    </fieldset>
+</form>
+<div>
+    Click <a href="application/{{next_page}}">here</a> to resume editing your application.
+</div>
+{% else %}
+<div>
+    Your first-year application is incomplete.
+</div>
+<div>
+    Click <a href="application/{{next_page}}">here</a> to resume editing your application.
+</div>
+{% endif %}
+{% endblock %}

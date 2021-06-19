@@ -3,26 +3,58 @@ import core.data as data
 from flask import render_template, abort, request, redirect, url_for
 from flask_discord import requires_authorization
 from core.web import app
+from functools import wraps
 
-@app.route('/application')
+def is_page(page):
+    try:
+        page = int(page)
+        return os.path.isfile(f'templates/application/{page}.html')
+    except:
+        return False
+
+def has_not_submitted(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        if data.get('application').get('submitted'):
+            return redirect(url_for('application'), 303)
+        else:
+            return f(*args, **kwargs)
+    return decorator
+    
+
+@app.route('/application', methods=['GET', 'POST'])
 @requires_authorization
 def application():
-    return ''
+    return {
+        'GET': application_get,
+        'POST': application_post
+    }[request.method]()
 
-@app.route('/application/<page>', methods=['GET', 'POST'])
+def application_get():
+    return render_template('application.html', **data.get('application'))
+
+@has_not_submitted
+def application_post():
+    data.set('application', {
+        'submitted': True
+    })
+    return redirect(url_for('application'), 303)
+
+
+@app.route('/application/<int:page>', methods=['GET', 'POST'])
 @requires_authorization
+@has_not_submitted
 def application_page(page):
+    if not is_page(page):
+        abort(404)
+
     return {
         'GET': application_page_get,
         'POST': application_page_post
     }[request.method](page)
 
 def application_page_get(page):
-    file = f'application/{page}.html'
-    if not os.path.isfile('templates/' + file):
-        abort(404)
-    else:
-        return render_template(file, data=data.get(f'page{page}'))
+    return render_template(f'application/{page}.html', data=data.get(f'page{page}'))
 
 def application_page_post(page):
     fields = request.form.to_dict(False)
@@ -31,13 +63,20 @@ def application_page_post(page):
     data.set(f'page{page}', fields)
 
     if next_:
-        try:
-            page = int(page)
-            if next_ == 'next':
-                page += 1
-            if next_ == 'back':
-                page -= 1
-        except:
-            pass
+        next_page = page
+        if next_ == 'next':
+            next_page += 1
+        if next_ == 'back':
+            next_page -= 1
+        if is_page(next_page):
+            page = next_page
+
+    data.set('application', {
+        'next_page': page,
+        'finished': next_page > page
+    })
     
-    return redirect(url_for('application_page', page=page), 303)
+    if page == next_page:
+        return redirect(url_for('application_page', page=page), 303)
+    else:
+        return redirect(url_for('application'), 303)
