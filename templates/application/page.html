@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+<form method="POST">
+    <div>
+        <input type="submit" name="next" value="save">
+    </div>
+    <fieldset>
+        <legend>
+            {% block name %}{% endblock %}
+        </legend>
+        {% block form %}{% endblock %}
+    </fieldset>
+    <div>
+        <input type="submit" name="next" value="back">
+        <input type="submit" name="next" value="next">
+    </div>
+    <div>
+        <i>
+            Page {% block page %}{% endblock %} of 4
+        </i>
+    </div>
+</form>
+{% endblock %}

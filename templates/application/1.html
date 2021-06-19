@@ -1,0 +1,8 @@
+{% extends 'application/page.html' %}
+{% block page %}1{% endblock %}
+{% block name %}test{% endblock %}
+{% block form %}
+<input type="checkbox" name="test" value="a" {{'checked' if 'a' in data.get("test", [])}}>
+<input type="checkbox" name="test" value="b" {{'checked' if 'b' in data.get("test", [])}}>
+<input type="checkbox" name="test" value="c" {{'checked' if 'c' in data.get("test", [])}}>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'application/page.html' %}
+{% block page %}4{% endblock %}
+{% block name %}test4{% endblock %}
+{% block form %}
+<input name="text" list="a" value="{{data.get('text', [''])[0]}}">
+<datalist id="a">
+<option>content</option>
+<option>content2</option>
+<option>content3</option>
+<option>content4</option>
+<option>content5</option>
+</datalist>
+{% endblock %}

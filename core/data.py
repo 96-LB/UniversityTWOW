@@ -24,7 +24,7 @@ def _load():
 
 def get(key):
     #deepcopies to prevent editing
-    return deepcopy(_load().get(key))
+    return deepcopy(_load().get(key, {}))
 
 def set(key, value):
     user = str(discord.fetch_user().id)
