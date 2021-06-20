@@ -6,13 +6,13 @@
 <div>
     Thank you for applying to UniversityTWOW. If you need to edit your application or submit additional materials, please contact the Admissions Office.
 </div>
-{% elif next_page is none %}
+{% elif not next_page %}
 <div>
     No application was found on file.
 </div>
-<div>
-    Click <a href="application/1">here</a> to start your application.
-</div>
+<form method="POST">
+    <input type="submit" value="Start a new application">
+</form>
 {% elif finished %}
 <div>
     Are you ready to submit your first-year application to UniversityTWOW's class of 2021?
@@ -42,14 +42,14 @@
     </fieldset>
 </form>
 <div>
-    Click <a href="application/{{next_page}}">here</a> to resume editing your application.
+    Click <a href="/application/{{next_page}}">here</a> to resume editing your application.
 </div>
 {% else %}
 <div>
     Your first-year application is incomplete.
 </div>
 <div>
-    Click <a href="application/{{next_page}}">here</a> to resume editing your application.
+    Click <a href="/application/{{next_page}}">here</a> to resume editing your application.
 </div>
 {% endif %}
 {% endblock %}

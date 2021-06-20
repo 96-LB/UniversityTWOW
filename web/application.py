@@ -12,10 +12,11 @@ def is_page(page):
     except:
         return False
 
-def has_not_submitted(f):
+def application_in_progress(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        if data.get('application').get('submitted'):
+        application = data.get('application')
+        if not application.get('next_page') or application.get('submitted'):
             return redirect(url_for('application'), 303)
         else:
             return f(*args, **kwargs)
@@ -33,17 +34,23 @@ def application():
 def application_get():
     return render_template('application.html', **data.get('application'))
 
-@has_not_submitted
 def application_post():
-    data.set('application', {
-        'submitted': True
-    })
-    return redirect(url_for('application'), 303)
-
+    application = data.get('application')
+    
+    if application.get('next_page'):
+        data.set('application', {
+            'submitted': True
+        })
+        return redirect(url_for('application'), 303)
+    else:
+        data.set('application', {
+            'next_page': 1
+        })
+        return redirect(url_for('application_page', page=1), 303)
 
 @app.route('/application/<int:page>', methods=['GET', 'POST'])
 @requires_authorization
-@has_not_submitted
+@application_in_progress
 def application_page(page):
     if not is_page(page):
         abort(404)
