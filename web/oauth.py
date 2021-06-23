@@ -19,6 +19,7 @@ def logout():
 def callback():
     try:
         discord.callback()
+        discord.id = discord.fetch_user().id
     except AccessDenied:
         return redirect(url_for('index'), 303)
     return redirect(url_for('application'), 303)

@@ -15,6 +15,7 @@ for key in ['CLIENT_ID', 'CLIENT_SECRET', 'REDIRECT_URI', 'BOT_TOKEN']:
     app.config[key] = os.environ[key]
 
 discord = DiscordOAuth2Session(app)
+app.jinja_env.globals['discord'] = discord
 
 for file in os.listdir('web'):
     if file.endswith('.py'):

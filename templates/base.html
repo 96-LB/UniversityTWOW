@@ -16,6 +16,19 @@
 {%- endif %}
     </head>
     <body>
+        <div class="base_header">
+            UNIVERSITYTWOW
+            {% if discord.authorized %}
+            <div class="base_login">
+                <div>
+                    Logged in as {{discord.fetch_user().name}} ({{get_id()}})
+                </div>
+                <div>
+                    <a href="{{url_for('logout')}}">Log out</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
 {% filter indent(width=8) %}{% block body %}{% endblock %}{% endfilter %}
     </body>
 </html>

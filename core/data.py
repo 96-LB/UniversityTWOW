@@ -1,13 +1,22 @@
 import json
-from core.web import discord
+from core.web import app, discord
 from replit import db
 from copy import deepcopy
+
 
 #stores any loaded users
 _cache = {}
 
+#overridden id
+_id = None
+
+def get_id():
+    return str(_id if _id is not None else discord.fetch_user().id)
+
+app.jinja_env.globals['get_id'] = get_id
+
 def _load():
-    user = str(discord.fetch_user().id)
+    user = get_id()
     
     #loads the user data first from the cache, then from the database
     if user in _cache:
@@ -27,7 +36,7 @@ def get(key):
     return deepcopy(_load().get(key, {}))
 
 def set(key, value):
-    user = str(discord.fetch_user().id)
+    user = get_id()
     obj = _load()
 
     #updates both the cache and the database

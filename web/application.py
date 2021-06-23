@@ -4,6 +4,7 @@ from flask import render_template, abort, request, redirect, url_for
 from flask_discord import requires_authorization
 from core.web import app
 from functools import wraps
+from web.override import is_admin
 
 def is_page(page):
     try:
@@ -14,9 +15,10 @@ def is_page(page):
 
 def application_in_progress(f):
     @wraps(f)
+    @requires_authorization
     def decorator(*args, **kwargs):
         application = data.get('application')
-        if not application.get('next_page') or application.get('submitted'):
+        if (not application.get('next_page') or application.get('submitted')) and not is_admin():
             return redirect(url_for('application'), 303)
         else:
             return f(*args, **kwargs)
@@ -49,7 +51,6 @@ def application_post():
         return redirect(url_for('application_page', page=1), 303)
 
 @app.route('/application/<int:page>', methods=['GET', 'POST'])
-@requires_authorization
 @application_in_progress
 def application_page(page):
     if not is_page(page):
