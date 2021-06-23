@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html>
-    <head land="en">
+<html lang="en">
+    <head>
         <title>UniversityTWOW</title>
         <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/base.css')}}">
 {%- if self.css() -%}
@@ -16,6 +16,6 @@
 {%- endif %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+{% filter indent(width=8) %}{% block body %}{% endblock %}{% endfilter %}
     </body>
 </html>

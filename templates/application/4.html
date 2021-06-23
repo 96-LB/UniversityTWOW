@@ -1,13 +1,44 @@
 {% extends 'application/page.html' %}
 {% block page %}4{% endblock %}
-{% block name %}test4{% endblock %}
+{% block name %}Extracurriculars{% endblock %}
 {% block form %}
-<input name="text" list="a" value="{{data.get('text', [''])[0]}}">
-<datalist id="a">
-<option>content</option>
-<option>content2</option>
-<option>content3</option>
-<option>content4</option>
-<option>content5</option>
-</datalist>
+<div>
+    Please list up to five activities in which you have participated:
+</div>
+{%- for i in range(5): %}
+
+<hr>
+
+<div>
+    Position/Leadership description:
+    {{text('name' ~ i, maxlength=50)}}
+</div>
+
+<div>
+    Organization:
+    {{text('org' ~ i, maxlength=50)}}
+</div>
+
+<div>
+    Description of activity, including accomplishments and recognition:
+    {{text('desc' ~ i, maxlength=100)}}
+</div>
+
+<div>
+    Year(s) participated:
+    {{checkbox('year' ~ i, range(2016, 2022))}}
+</div>
+
+<div>
+    Hours spent per week:
+    {{number('hours' ~ i, min=0, max=168)}}
+</div>
+
+<div>
+    Weeks spent per year:
+    {{number('weeks' ~ i, min=0, max=52)}}
+</div>
+
+{{checkbox('continue' ~ i, ['I intend to participate in a similar activity in university.'])}}
+{%- endfor %}
 {% endblock %}

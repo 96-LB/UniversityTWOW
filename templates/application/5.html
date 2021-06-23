@@ -1,0 +1,30 @@
+{% extends 'application/page.html' %}
+{% block page %}5{% endblock %}
+{% block name %}Writing{% endblock %}
+{% block form %}
+<div>
+    The following section assumes that the applicant is familiar with UniversityTWOW and its offerings. Please select the course of study from our wide variety of majors which interests you the most. This choice will not adversely affect your admissions decision, nor is it binding - if admitted, you can change your major at a later date.
+</div>
+
+{{select('major', ['TWOW Design', 'Sociology', 'Cultural Studies', 'Visual Arts', 'Mathematics'])}}
+
+<hr>
+
+<div>
+    Please respond to each of the following essay prompts:
+</div>
+{%- set prompts = [
+    'Why are you interested in studying your selected major? Explain any past experience you have within the field of study, as well as what you aspire to do with the knowledge you will gain at UniversityTWOW.',
+    'UniversityTWOW is an extremely compelling place of study for an incredibly wide variety of reasons. Which one of these factors is most important to you; what is the greatest reason for your interest in studying at UniversityTWOW?',
+    'Our applicants come from a diverse range of cultures and backgrounds, making each and every one unique in a way that statistics cannot represent. Explain who you are and where you come from, and how your identity has shaped your life.',
+    'At UniversityTWOW, we\'re looking for students who go above and beyond to make the world a better place. Tell us about a time that you faced and stood up against discrimination.',
+    'One of the world\'s many beauties is its many unique and wonderful cultures, each of which offers something new to learn. How do you ensure to surround yourself with diversity on a daily basis?',
+    'Everyone faces obstacles in life, but we\'re searching for the most unfortunate individuals in order to boost our reputation. What\'s the biggest challenge you\'ve faced throughout your entire life?',
+    'We know that not everybody is able to cure cancer as a teenager, but we also know that not everybody can study at UniversityTWOW. What is your accomplishment of which you are the most proud?',
+    'Despite exorbitant tuition rates, UniversityTWOW loses a lot of money on each student, so we expect you to give us more than we\'ll actually give you. What contribution will you make the UniversityTWOW community?',
+    'Say something quirky.'
+] -%}
+{%- for i in range(prompts|length) %}
+{{prompt('prompt' ~ i, prompts[i])}}
+{%- endfor %}
+{% endblock %}

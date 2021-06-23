@@ -1,6 +1,37 @@
 {% extends 'application/page.html' %}
 {% block page %}3{% endblock %}
-{% block name %}test3{% endblock %}
+{% block name %}Honors{% endblock %}
 {% block form %}
-<input type="text" name="text" value="{{data.get('text', [''])[0]}}">
+<div>
+    Please list up to five honors which you have received:
+</div>
+{%- for i in range(5): %}
+
+<hr>
+
+<div>
+    Name:
+    {{text('name' ~ i, maxlength=50)}}
+</div>
+
+<div>
+    Organization:
+    {{text('org' ~ i, maxlength=50)}}
+</div>
+
+<div>
+    Description:
+    {{text('desc' ~ i, maxlength=100)}}
+</div>
+
+<div>
+    Year(s) awarded:
+    {{checkbox('year' ~ i, range(2016, 2022))}}
+</div>
+
+<div>
+    Level(s) of recognition:
+    {{checkbox('level' ~ i, ['Round', 'Season', 'TWOW', 'Community'])}}
+</div>
+{%- endfor %}
 {% endblock %}

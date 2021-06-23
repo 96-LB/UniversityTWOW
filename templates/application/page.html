@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% block css %}{% endblock %}
-{% block js %}{% endblock %}
+{% block css %}page.css{% endblock %}
+{% block js %}page.js{% endblock %}
 {% block body %}
 <form method="POST">
     <div>
@@ -10,7 +10,7 @@
         <legend>
             {% block name %}{% endblock %}
         </legend>
-        {% block form %}{% endblock %}
+{% filter indent(width=8) %}{% block form %}{% endblock %}{% endfilter %}
     </fieldset>
     <div>
         <input type="submit" name="next" value="back">
@@ -18,8 +18,78 @@
     </div>
     <div>
         <i>
-            Page {% block page %}{% endblock %} of 4
+            Page {% block page %}{% endblock %} of 5
         </i>
     </div>
 </form>
 {% endblock %}
+
+{% macro get(key) %}{{data.get(key, [''])[0]}}{% endmacro %}
+
+{% macro indent(width, content) -%}
+{% filter indent(width=width) -%}
+{{content}}
+{%- endfilter %}
+{%- endmacro %}
+
+{% macro properties() -%}
+{% for k, v in kwargs.items() %} {{k ~ '=' ~ v}}{% endfor %}
+{%- endmacro %}
+
+{% macro text(name) -%}
+<input type="text" name="{{name}}"{{properties(**kwargs)}} value="{{get(name)}}">
+{%- endmacro %}
+
+{% macro number(name) -%}
+<input type="number" name="{{name}}"{{properties(**kwargs)}} value="{{get(name)}}">
+{%- endmacro %}
+
+{% macro month(name) -%}
+<input type="month" name="{{name}}"{{properties(**kwargs)}} value="{{get(name)}}">
+{%- endmacro %}
+
+{% macro select(name, choices) -%}
+<select name="{{name}}">
+    {%- for choice in choices %}
+    <option{{' selected' if get(name) == choice|string}}>{{choice}}</option>
+    {%- endfor -%}
+    {%- if get(name) not in choices %}
+    <option selected disabled hidden>-- select --</option>
+    {%- endif %}
+</select>
+{%- endmacro %}
+
+{% macro radio(name, choices) -%}
+<div>
+    {%- for choice in choices %}
+    <div>
+        <label>
+            <input type="radio" name="{{name}}" value="{{choice}}"{{' checked' if get(name) == choice|string}}>
+            {{choice}}
+        </label>
+    </div>
+    {%- endfor %}
+</div>
+{%- endmacro %}
+
+{% macro checkbox(name, choices) -%}
+<div>
+    {%- for choice in choices %}
+    <div>
+        <label>
+            <input type="checkbox" name="{{name}}" value="{{choice}}"{{' checked' if choice|string in data.get(name, [])}}>
+            {{choice}}
+        </label>
+    </div>
+    {%- endfor %}
+</div>
+{%- endmacro %}
+
+{% macro prompt(name, question) -%}
+<div>
+    {{question}} <i>(10 words)</i>
+    <div>
+        {{text(name, pattern='(\S+[^\w\d]*){0,10}', size=100)}}
+    </div>
+</div>
+{%- endmacro %}
