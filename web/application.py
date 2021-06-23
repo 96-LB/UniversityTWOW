@@ -72,9 +72,9 @@ def application_page_post(page):
 
     if next_:
         next_page = page
-        if next_ == 'next':
+        if next_ == '►':
             next_page += 1
-        if next_ == 'back':
+        if next_ == '◄':
             next_page -= 1
         if is_page(next_page):
             page = next_page

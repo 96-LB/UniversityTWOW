@@ -1,5 +1,5 @@
 from core.web import app, discord
-from flask import redirect, url_for
+from flask import redirect, url_for, request
 from flask_discord import Unauthorized, AccessDenied
 
 @app.errorhandler(Unauthorized)
@@ -8,17 +8,21 @@ def error_unauthorized(error):
 
 @app.route('/login')
 def login():
+    next_page = request.args.get('next', 'index')
+    print('login' + str(discord))
     return discord.create_session(['identify'], prompt=False)
 
 @app.route('/logout')
 def logout():
+    print('logout' + str(discord))
     discord.revoke()
     return redirect(url_for('index'), 303)
 
 @app.route('/callback')
 def callback():
     try:
-        discord.callback()
+        print('callback' + str(discord))
+        print(discord.callback())
     except AccessDenied:
         return redirect(url_for('index'), 303)
     return redirect(url_for('application'), 303)

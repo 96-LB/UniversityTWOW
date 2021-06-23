@@ -1,5 +1,11 @@
 from core.web import app
-from flask import render_template
+from flask import render_template, request, redirect
+
+@app.before_request
+def correct_host():
+    server = app.config['SERVER_NAME']
+    if request.host != server:
+        return redirect(f'https://{server}{request.path}', 302)
 
 @app.route('/favicon.ico')
 def favicon():

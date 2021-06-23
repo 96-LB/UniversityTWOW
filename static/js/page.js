@@ -3,6 +3,9 @@ function setup_page()
     //changing any input initiates the unsaved changes dialog
     query('input, select').forEach(elem => {
         on(elem, 'change', () => {
+            query('#page_save').forEach(elem => {
+                elem.disabled = false;
+            })
             window.onbeforeunload = event => {
                 event.preventDefault()
                 return event.returnValue = "Are you sure you want to exit?";

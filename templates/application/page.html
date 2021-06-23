@@ -3,20 +3,16 @@
 {% block js %}page.js{% endblock %}
 {% block body %}
 <form method="POST">
-    <div>
-        <input type="submit" name="next" value="save">
-    </div>
+    <input type="submit" name="next" value="SAVE SECTION" id="page_save" disabled>
     <fieldset>
         <legend>
             {% block name %}{% endblock %}
         </legend>
 {% filter indent(width=8) %}{% block form %}{% endblock %}{% endfilter %}
     </fieldset>
-    <div>
-        <input type="submit" name="next" value="back">
-        <input type="submit" name="next" value="next">
-    </div>
-    <div>
+    <div> 
+        <input type="submit" name="next" value="◄">
+        <input type="submit" name="next" value="►">
         <i>
             Page {% block page %}{% endblock %} of 5
         </i>
