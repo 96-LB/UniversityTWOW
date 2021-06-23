@@ -9,19 +9,16 @@ def error_unauthorized(error):
 @app.route('/login')
 def login():
     next_page = request.args.get('next', 'index')
-    print('login' + str(discord))
     return discord.create_session(['identify'], prompt=False)
 
 @app.route('/logout')
 def logout():
-    print('logout' + str(discord))
     discord.revoke()
     return redirect(url_for('index'), 303)
 
 @app.route('/callback')
 def callback():
     try:
-        print('callback' + str(discord))
         print(discord.callback())
     except AccessDenied:
         return redirect(url_for('index'), 303)

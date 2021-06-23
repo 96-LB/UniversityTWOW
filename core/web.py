@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = b64encode(os.getenv('SECRET_KEY').encode('utf-8'))
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "true" #suppresses reverse-proxy http errors - proxy should already force https
 
-for key in ['CLIENT_ID', 'CLIENT_SECRET', 'BOT_TOKEN', 'REDIRECT_URI']:
+for key in ['CLIENT_ID', 'CLIENT_SECRET', 'REDIRECT_URI', 'BOT_TOKEN']:
     key = 'DISCORD_' + key
     app.config[key] = os.environ[key]
 

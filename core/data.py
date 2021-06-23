@@ -3,7 +3,6 @@ from core.web import app, discord
 from replit import db
 from copy import deepcopy
 
-
 #stores any loaded users
 _cache = {}
 
