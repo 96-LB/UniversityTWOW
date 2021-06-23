@@ -1,6 +1,6 @@
 import core.data as data
 from core.web import app, discord
-from flask import abort, redirect, url_for
+from flask import abort, redirect, url_for, session
 from flask_discord import requires_authorization
 from functools import wraps
 
@@ -27,11 +27,12 @@ def requires_admin(f):
 @requires_admin
 def override():
     #resets to administrator user
-    return redirect(url_for('override_user', user=admin), 303)
+    session['override'] = None
+    return redirect(url_for('index'), 303)
 
 @app.route('/override/<int:user>')
 @requires_admin
 def override_user(user):
     #overrides the data module's id in order to read other data
-    data._id = user
+    session['override'] = user
     return redirect(url_for('index'), 303)

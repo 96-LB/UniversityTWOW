@@ -2,15 +2,14 @@ import json
 from core.web import app, discord
 from replit import db
 from copy import deepcopy
+from flask import session
 
 #stores any loaded users
 _cache = {}
 
-#overridden id
-_id = None
-
 def get_id():
-    return str(_id if _id is not None else discord.fetch_user().id)
+    override = session.get('override')
+    return str(override if override is not None else discord.fetch_user().id)
 app.jinja_env.globals['get_id'] = get_id
 
 def _load():
