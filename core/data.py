@@ -11,7 +11,6 @@ _id = None
 
 def get_id():
     return str(_id if _id is not None else discord.fetch_user().id)
-
 app.jinja_env.globals['get_id'] = get_id
 
 def _load():

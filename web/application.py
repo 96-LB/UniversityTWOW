@@ -14,16 +14,20 @@ def is_page(page):
         return False
 
 def application_in_progress(f):
+    #redirects to the application page unless either of the conditions are met:
+    #1. the user has started but not submitted an application
+    #2. the user is an administrator
     @wraps(f)
     @requires_authorization
     def decorator(*args, **kwargs):
-        application = data.get('application')
-        if (not application.get('next_page') or application.get('submitted')) and not is_admin():
+        app = data.get('application')
+        if (not app.get('next_page') or app.get('submitted')) and not is_admin():
             return redirect(url_for('application'), 303)
         else:
             return f(*args, **kwargs)
     return decorator
     
+###
 
 @app.route('/application', methods=['GET', 'POST'])
 @requires_authorization
@@ -40,15 +44,19 @@ def application_post():
     application = data.get('application')
     
     if application.get('next_page'):
+        #submits the application
         data.set('application', {
             'submitted': True
         })
         return redirect(url_for('application'), 303)
     else:
+        #starts the application
         data.set('application', {
             'next_page': 1
         })
         return redirect(url_for('application_page', page=1), 303)
+
+###
 
 @app.route('/application/<int:page>', methods=['GET', 'POST'])
 @application_in_progress
@@ -65,11 +73,13 @@ def application_page_get(page):
     return render_template(f'application/{page}.html', data=data.get(f'page{page}'))
 
 def application_page_post(page):
+    #stores the user's responses to the form, excluding the next field
     fields = request.form.to_dict(False)
     if 'next' in fields:
         next_ = fields.pop('next')[0]
     data.set(f'page{page}', fields)
 
+    #adjusts the next page based on the value of the next field
     if next_:
         next_page = page
         if next_ == '►':
@@ -79,6 +89,7 @@ def application_page_post(page):
         if is_page(next_page):
             page = next_page
 
+    #sets the application metadata - it is finished if there is no next page
     data.set('application', {
         'next_page': page,
         'finished': next_page > page
