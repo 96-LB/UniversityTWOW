@@ -4,12 +4,12 @@ from flask_discord import Unauthorized, AccessDenied
 
 @app.errorhandler(Unauthorized)
 def error_unauthorized(error):
-    return redirect(url_for('login'), 303)
+    return redirect(url_for('login', next=request.path), 303)
 
 @app.route('/login')
 def login():
     next_page = request.args.get('next', 'index')
-    return discord.create_session(['identify'], prompt=False)
+    return discord.create_session(['identify'], prompt=False, data={'next': next_page})
 
 @app.route('/logout')
 def logout():
@@ -18,8 +18,9 @@ def logout():
 
 @app.route('/callback')
 def callback():
+    next_page = 'index'
     try:
-        print(discord.callback())
-    except AccessDenied:
-        return redirect(url_for('index'), 303)
-    return redirect(url_for('application'), 303)
+        next_page = discord.callback()['next']
+    except (AccessDenied, KeyError):
+        pass
+    return redirect(next_page, 303)

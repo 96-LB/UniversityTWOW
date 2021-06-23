@@ -13,6 +13,6 @@
     font-size: 16px;
 }
 
-.base_header > .base_login a {
-    color: #FFFFFF
+.base_header a {
+    color: #FFFFFF;
 }
