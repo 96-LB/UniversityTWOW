@@ -18,7 +18,7 @@ def logout():
 
 @app.route('/callback')
 def callback():
-    next_page = 'index'
+    next_page = url_for('index')
     try:
         next_page = discord.callback()['next']
     except (AccessDenied, KeyError):
