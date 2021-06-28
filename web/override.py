@@ -1,14 +1,13 @@
-import core.data as data
 from core.web import app, discord
 from flask import abort, redirect, url_for, session
 from flask_discord import requires_authorization
 from functools import wraps
 
 #discord user @96 LB#5274
-admin = 236257776421175296 
+ADMIN = 236257776421175296 
 
 def is_admin():
-    return discord.authorized and discord.fetch_user().id == admin
+    return discord.authorized and discord.fetch_user().id == ADMIN
 
 app.jinja_env.globals['is_admin'] = is_admin
 

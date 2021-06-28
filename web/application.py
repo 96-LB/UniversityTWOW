@@ -1,5 +1,6 @@
 import os
 import core.data as data
+import bot.roles as roles
 from flask import render_template, abort, request, redirect, url_for
 from flask_discord import requires_authorization
 from core.web import app
@@ -48,6 +49,7 @@ def application_post():
         data.set('application', {
             'submitted': True
         })
+        roles.applied(data.get_id())
         return redirect(url_for('application'), 303)
     else:
         #starts the application

@@ -1,7 +1,11 @@
+:root {
+  --main: #4D6396; /* convert base-64 "TWOW" to hexadecimal */
+}
+
 .base_header {
     margin: -8px -8px 8px -8px;
     padding: 8px;
-    background-color: #4D6396;
+    background-color: var(--main);
     color: #FFFFFF;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 24px;
@@ -15,4 +19,8 @@
 
 .base_header a {
     color: #FFFFFF;
+}
+
+.tooltip {
+    text-decoration: underline dotted var(--main) 1.5px;
 }
