@@ -20,7 +20,7 @@
 </form>
 {% endblock %}
 
-{% macro get(key) %}{{data.get(key, [''])[0]}}{% endmacro %}
+{% macro get(key, escaped=True) %}{{data.get(key, [''])[0] if escaped else data.get(key, [''])[0] | safe}}{% endmacro %}
 
 {% macro indent(width, content) -%}
 {% filter indent(width=width) -%}
@@ -47,9 +47,9 @@
 {% macro select(name, choices) -%}
 <select name="{{name}}">
     {%- for choice in choices %}
-    <option{{' selected' if get(name) == choice|string}}>{{choice}}</option>
+    <option{{' selected' if get(name, escaped=False) == choice|string}}>{{choice}}</option>
     {%- endfor -%}
-    {%- if get(name) not in choices %}
+    {%- if get(name, escaped=False) not in choices|map('string') %}
     <option selected disabled hidden>-- select --</option>
     {%- endif %}
 </select>
@@ -60,7 +60,7 @@
     {%- for choice in choices %}
     <div>
         <label>
-            <input type="radio" name="{{name}}" value="{{choice}}"{{' checked' if get(name) == choice|string}}>
+            <input type="radio" name="{{name}}" value="{{choice}}"{{' checked' if get(name, escaped=False) == choice|string}}>
             {{choice}}
         </label>
     </div>

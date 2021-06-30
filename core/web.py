@@ -11,6 +11,7 @@ app.url_map.strict_slashes = False
 app.config['SERVER_NAME'] = 'universitytwow.cf'
 app.config['SECRET_KEY'] = b64encode(os.getenv('SECRET_KEY').encode('utf-8'))
 app.config['PREFERRED_URL_SCHEME'] = 'https'
+app.jinja_env.filters['debug'] = lambda x: print(x) or ''
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = 'true' #suppresses reverse-proxy http errors - proxy should already force https
 
 #loads in discord environment variables
