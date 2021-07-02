@@ -12,9 +12,9 @@ def get_id():
     return str(override if override is not None else discord.fetch_user().id)
 app.jinja_env.globals['get_id'] = get_id
 
-def _load():
-    user = get_id()
-    
+def _load(user=None):
+    user = get_id() if user is None else str(user)
+
     #loads the user data first from the cache, then from the database
     if user in _cache:
         obj = _cache[user]
@@ -28,13 +28,12 @@ def _load():
     
     return obj
 
-def get(key):
+def get(key, *, user=None):
     #deepcopies to prevent editing
-    return deepcopy(_load().get(key, {}))
+    return deepcopy(_load(user).get(key, {}))
 
-def set(key, value):
-    user = get_id()
-    obj = _load()
+def set(key, value, *, user=None):
+    obj = _load(user)
 
     #updates both the cache and the database
     obj[key] = value

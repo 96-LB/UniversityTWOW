@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+<div>
+    Your application has been thoroughly reviewed by our admissions staff to determine whether you would be a good fit for UniversityTWOW. Each year, we receive numerous talented applicants, and though many are qualified candidates, we can only accept so many. The majority of our prospective students are not offered admission simply because we don't have enough space in our entering class. With that unfortunate truth in mind, are you ready to view your admissions decision to see if you are one of the lucky few? Please click <a href="{{url_for('decision')}}" onclick="return confirm('Are you sure that you\'re ready?')">here</a> to proceed and follow up on your decision.
+</div>
+{% endblock %}
