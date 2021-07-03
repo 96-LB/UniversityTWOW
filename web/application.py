@@ -6,7 +6,7 @@ from flask import render_template, abort, request, redirect, url_for
 from flask_discord import requires_authorization
 from core.web import app, discord
 from functools import wraps
-from web.admin import is_admin, requires_admin
+from web.permissions import is_admin, requires_admin
 from replit import db
 
 def is_page(page):
@@ -76,19 +76,19 @@ def application_post():
 
 @app.route('/application/<int:page>', methods=['GET', 'POST'])
 @application_in_progress
-def application_page(page):
+def application_page(*, page):
     if not is_page(page):
         abort(404)
 
     return {
         'GET': application_page_get,
         'POST': application_page_post
-    }[request.method](page)
+    }[request.method](page=page)
 
-def application_page_get(page):
+def application_page_get(*, page):
     return render_template(f'application/{page}.html', data=data.get(f'page{page}'))
 
-def application_page_post(page):
+def application_page_post(*, page):
     #stores the user's responses to the form, excluding the next field
     fields = request.form.to_dict(False)
     if 'next' in fields:

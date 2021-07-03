@@ -1,34 +1,6 @@
 {% extends 'base.html' %}
 {% block css %}form.css{% endblock %}
 {% block js %}form.js{% endblock %}
-{% set departments = {
-    'twow': 'TWOW Design',
-    'socio': 'Sociology',
-    'culture': 'Cultural Studies',
-    'art': 'Visual Arts',
-    'math': 'Mathematics',
-} %}
-{% set professors = {
-    'nerd': 'Prof. Biscuit',
-    'azu': 'Dr. Azurite',
-    'dark': 'Dr. Dark',
-    'h': 'Dr. H',
-    '69': 'Dr. LB',
-    'e': 'Mr. E'
-} %}
-{% set options = [
-    ['BS003', 'The Bachelor\'s of Art of Bachelor\'s of Science', 'twow', 'nerd', 'NOTE TO SELF: Replace this with some pretentious, academic-sounding explantion of just fucking winging it on the fly. I\'d say I couldn\'t believe that the dean\'s letting me get away with this, but I guess that\'s what a tenure\'s for.'],
-    ['COLL101', 'Intro to Collaborative Efforts', 'socio', 'azu', 'Let\'s all hold hands (or bump elbows, haha) and get along! This class helps us have epic gamer friendships and develop bonds in a place befuddled by those dang computers.'],
-    ['WLAN101', 'World Language TWOWing', 'culture', 'dark', 'A practical and culture-oriented class on TWOWing in another language - useful for whenever the English speaking world gets inevitably and brutally taken over by a non-specific Romance-language-speaking foreign power!'],
-    ['ART110', 'Handwriting', 'art', 'dark', 'A practical and culture-oriented class on TWOWing in manual handwriting - useful for whenever all computers get strategically destroyed by a non-specific despotic anti-information authoritarian regime led by a Romance-language-speaking foreign power!'],
-    ['MATH210', 'Calculus III', 'math', 'h', 'Here you\'ll learn about differentiation and integration in multiple dimensions!'],
-    ['HIST314', 'TWOW History', 'culture', 'nerd', '"An interdisciplinary overview of the greater historical trends over the past five years. Examination of important figures and innovations through cultural, mathematical, and interpersonal lenses."<br><br>"...did you get all that? Yeah, alright. I don\'t get why I\'m teaching this course if I\'m around for half of the curriculum. This is fucking stupid."'],
-    ['MATH141', 'Statistics and Modeling', 'math', '69', 'Basic survey of statistics modeling techniques such as Gaussian distributions and inter-TWOW ranking systems and their applications. Qualitative analysis of strengths and weaknesses of various models.'],
-    ['TWOW101-1', 'Hosting a Good TWOW', 'twow', 'h', 'A project-oriented class that covers all aspects of creating a TWOW; this includes good prompts, good aesthetics, good presentation and even good twists. Also covers how to avoid bad prompts, bad aesthetics, bad presentation and bad twists.'],
-    ['TWOW101-2', 'Hosting a Good TWOW', 'twow', '69', '<i>[NOTE: Due to popular demand, two sections have been opened for this course. You may not sign up for both TWOW101-1 and TWOW101-2.]</i>'],
-    ['ARG404', 'Alternate Reality Games', 'socio', 'e', '&nbsp;'],
-    ['ART121', 'The Art of Art', 'art', 'azu', 'DRAW. CREATE. LIBERATE.'],
-] %}
 {% block body %}
 
 <h3>
@@ -78,20 +50,20 @@
                     Professor
                 </th>
             </tr>
-            {%- for option in options %}
+            {%- for id, class in class_list.items() %}
             <tr>
                 <td>
-                    <input type="checkbox" name="classes" value="{{option[0]}}"{{' checked' if option[0] in classes}}>
+                    <input type="checkbox" name="classes" value="{{id}}"{{' checked' if id in classes}}>
                 </td>
-                {%- for data in [option[0], option[1], departments[option[2]], professors[option[3]]] %}
+                {%- for key in ['id', 'title', 'department', 'professor_name'] %}
                 <td>
-                    {{data}}
+                    {{class[key]}}
                 </td>
                 {%- endfor %}
             </tr>
             <tr>
                 <td colspan="5">
-                    {{option[4]|safe}}
+                    {{class['description']|safe}}
                     <br>
                     &nbsp;
                 </td>

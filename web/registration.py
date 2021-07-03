@@ -1,6 +1,7 @@
 import core.data as data
 from core.web import app
 from web.application import accepted
+from web.classes import class_list
 from flask import request, render_template, redirect, url_for
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -12,7 +13,7 @@ def register():
     }[request.method]()
 
 def register_get():
-    return render_template('register.html', classes=data.get('classes'))
+    return render_template('register.html', class_list=class_list, classes=data.get('classes'))
 
 def register_post():
     #stores a list of unique classes and removes TWOW101 double sections

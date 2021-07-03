@@ -23,6 +23,11 @@ for key in ['CLIENT_ID', 'CLIENT_SECRET', 'REDIRECT_URI', 'BOT_TOKEN']:
 discord = DiscordOAuth2Session(app)
 app.jinja_env.globals['discord'] = discord
 
+def jinja_env(f):
+    #adds a function to the jinja environment
+    app.jinja_env.globals[f.__name__] = f
+    return f
+
 #loads each module in the web folder
 for file in os.listdir('web'):
     if file.endswith('.py'):

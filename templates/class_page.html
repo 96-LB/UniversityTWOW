@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{%- macro expand(link_list) %}
+<ul>
+    {%- for link in link_list %}
+    <li>
+        {%- if link['id'] is iterable %}
+        {{link['name']}}
+        {%- filter indent(width=8) %}{{expand(link['id'])}}{%- endfilter %}
+        {%- else %}
+        <a href="{{url_for('link_page', class_id=id, link_id=link['id'])}}">{{link['name']}}</a>
+        {%- endif %}
+    </li>
+    {%- endfor %}
+</ul>
+{%- endmacro %}
+{% block body %}
+<div>
+    <a href="{{url_for('classes')}}">Return to your class list</a>
+</div>
+<h1>
+    {{id}}
+</h1>
+<h2>
+    {{title}}
+</h2>
+<p>
+    <i>{{description|safe}}</i>
+</p>
+{%- if not links %}
+<div>
+    This class has not yet uploaded any materials.
+</div>
+{%- else %}
+<h3>
+    Materials:
+</h3>
+{{expand(links)}}
+{%- endif %}
+{% endblock %}

@@ -1,6 +1,6 @@
 from core.web import app
 from flask import session, redirect, url_for
-from web.admin import requires_admin
+from web.permissions import requires_admin
 
 @app.route('/override')
 @requires_admin
@@ -11,7 +11,7 @@ def override():
 
 @app.route('/override/<int:user>')
 @requires_admin
-def override_user(user):
+def override_user(*, user):
     #overrides the data module's id in order to read other data
     session['override'] = user
     return redirect(url_for('index'), 303)

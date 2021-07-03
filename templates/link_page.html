@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+<div>
+    <a href="{{url_for('class_page', class_id=class_id)}}">Return to your class page</a>
+</div>
+<h1>
+    {{name}}
+</h1>
+<h2>
+    {{title}}
+</h2>
+{-% if description %}
+<p>
+    {{description}}
+</p>
+{-% endif %}
+<p>
+    {{link}}
+</p>
+{% endblock %}
