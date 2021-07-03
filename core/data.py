@@ -7,13 +7,17 @@ from flask import session
 #stores any loaded users
 _cache = {}
 
-def get_id():
+def get_id(user=None):
     override = session.get('override')
-    return str(override if override is not None else discord.fetch_user().id)
+    return str(
+        user if user is not None else 
+        override if override is not None else
+        discord.fetch_user().id
+    )
 app.jinja_env.globals['get_id'] = get_id
 
 def _load(user=None):
-    user = get_id() if user is None else str(user)
+    user = get_id(user)
 
     #loads the user data first from the cache, then from the database
     if user in _cache:
@@ -37,4 +41,4 @@ def set(key, value, *, user=None):
 
     #updates both the cache and the database
     obj[key] = value
-    db[user] = json.dumps(obj)
+    db[get_id(user)] = json.dumps(obj)

@@ -1,9 +1,9 @@
-function setup_page()
+function setup_form()
 {
     //changing any input initiates the unsaved changes dialog
     query('input, select').forEach(elem => {
         on(elem, 'change', () => {
-            query('#page_save').forEach(elem => {
+            query('#form_save').forEach(elem => {
                 elem.disabled = false;
             })
             window.onbeforeunload = event => {
@@ -21,4 +21,4 @@ function setup_page()
     });
 }
 
-load(setup_page);
+load(setup_form);

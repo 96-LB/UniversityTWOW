@@ -2,6 +2,11 @@
   --main: #4D6396; /* convert base-64 "TWOW" to hexadecimal */
 }
 
+table, th, tr, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
 .base_header {
     margin: -8px -8px 8px -8px;
     padding: 8px;

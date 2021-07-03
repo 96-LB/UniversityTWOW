@@ -30,7 +30,7 @@ def application_in_progress(f):
             return f(*args, **kwargs)
     return decorator
 
-def status_updated(f):
+def accepted(f):
     #redirects to the application page unless the user's application has been accepted
     @wraps(f)
     @requires_authorization
@@ -119,17 +119,15 @@ def application_page_post(page):
 ###
 
 @app.route('/application/update')
-@status_updated
+@accepted
 def are_you_sure():
-    return render_template('are_you_sure.html')
+    return render_template('application/update.html')
 
 ###
 
 @app.route('/application/decision')
-@status_updated
+@accepted
 def decision():
-    print(discord.fetch_user().username + " just viewed their application")
-
     #grab information from the application
     name = data.get('page1').get('name', [discord.fetch_user().username])[0]
     major = data.get('page5').get('major', ['Undecided'])[0]
@@ -139,18 +137,20 @@ def decision():
     roles.add_role('ENROLLED', reason='viewed decision')
     roles.add_role(major, reason='viewed decision')
     
-    return render_template('decision.html', name=name, major=major)
+    return render_template('application/decision.html', name=name, major=major)
 
 ###
 
 @app.route('/application/accept')
 @requires_admin
 def accept():
-    accepted = []
+    students = []
     for user in db.keys():
+        #checks if each user has a submitted application
         app = data.get('application', user=user)
         if app.get('submitted'):
+            #notify them and accept their application
             dm.dm(user, 'An update has been posted to your application status page. You may access the portal here: https://universitytwow.cf')
             data.set('application', {'accepted': True}, user=user)
-            accepted.append(user)
-    return {'accepted': accepted}
+            students.append(user)
+    return {'accepted': students}
