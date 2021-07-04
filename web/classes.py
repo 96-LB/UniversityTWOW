@@ -1,8 +1,9 @@
 import core.data as data
+import random
 from core.web import app, discord, jinja_env
 from web.permissions import requires_admin
-from web.application import accepted
-from flask import render_template, abort
+from web.application import requires_accepted
+from flask import render_template, abort, request, url_for, redirect
 from flask_discord import requires_authorization
 from functools import wraps
 
@@ -84,6 +85,7 @@ class_list = {
         'title': 'Handwriting',
         'department': department_list['Visual Arts']['name'],
         'professor': professor_list['184768535107469314']['id'],
+        'professor_name': professor_list['184768535107469314']['name'],
         'ta': None,
         'description': 'A practical and culture-oriented class on TWOWing in manual handwriting - useful for whenever all computers get strategically destroyed by a non-specific despotic anti-information authoritarian regime led by a Romance-language-speaking foreign power!'
     },
@@ -152,68 +154,197 @@ class_list = {
     }
 }
 
-@jinja_env
-def is_professor():
-    return discord.authorized and data.get_id() in professor_list
+### aux ###
 
-def teaches_class(class_id):
-    return is_professor() and class_id in class_list and data.get_id() in (class_list[class_id]['professor'], class_list[class_id]['ta'])
-
-def enrolled_in(class_id):
-    return discord.authorized and class_id in class_list and class_id in data.get('classes')
-
-def student_or_professor(f):
-    #checks whether the user is an accepted student or a professor
-    @wraps(f)
-    @requires_authorization
-    def decorator(*args, **kwargs):
-        return f(*args, **kwargs) if is_professor() else accepted(f)(*args, **kwargs)
-    return decorator
-
-def is_class_member(f):
-    #checks whether a student is enrolled in or a professor is teaching a class
-    @wraps(f)
-    @student_or_professor
-    def decorator(*args, class_id, **kwargs):
-        if class_id not in class_list:
-            abort(404)
-        if not enrolled_in(class_id) and not teaches_class(class_id):
-            abort(403)
-        return f(*args, class_id=class_id, **kwargs)
-    return decorator
-
-def find_link(link_id, links):
+def find_link(link_id, links, key='id'):
     for link in links:
-        if 'id' not in links:
-            continue
-        if link['id'] == link_id:
+        if link[key] == link_id:
             return link
-        if isinstance(links['id'], list):
-            link = find_link(link_id, link)
+        if link['type'] == 'container':
+            link = find_link(link_id, link['link'], key=key)
             if link:
                 return link
     return None
 
+def find_container(link_id, links):
+    for link in links:
+        if link['id'] == link_id:
+            return links
+        if link['type'] == 'container':
+            container = find_container(link_id, link['link'])
+            if container:
+                return container
+    return None
+
+def find_containers(links):
+    out = []
+    for link in links:
+        if link['type'] == 'container':
+            out += [link] + find_containers(link['link'])
+    return out
+
+### checks ###
+
+@jinja_env
+def is_professor():
+    return discord.authorized and data.get_id() in professor_list
+
+def teaches_class(class_):
+    return is_professor() and data.get_id() in (class_['professor'], class_['ta'])
+
+def enrolled_in(class_):
+    return discord.authorized and class_['id'] in data.get('classes')
+
+### decorators ###
+
+def requires_valid_class(f):
+    #ensures that the specified class id is valid
+    @wraps(f)
+    def decorator(*args, class_id, **kwargs):
+        class_ = class_list.get(class_id)
+        if not class_:
+            abort(404)
+        return f(*args, class_=class_, **kwargs)
+    return decorator
+
+def requires_valid_link(f):
+    #ensures that the specified link id is valid
+    @wraps(f)
+    def decorator(*args, class_, link_id, **kwargs):
+        link = find_link(link_id, data.get('links', user=class_['id']))
+        if not link:
+            abort(404)
+        return f(*args, class_=class_, link=link, **kwargs)
+    return decorator
+
+def requires_professor(f):
+    #checks whether the user is a professor
+    @wraps(f)
+    @requires_authorization
+    def decorator(*args, **kwargs):
+        if not is_professor():
+            abort(403)
+        return f(*args, **kwargs)
+    return decorator
+
+def requires_participant(f):
+    #checks whether the user is an accepted student or a professor
+    @wraps(f)
+    @requires_authorization
+    def decorator(*args, **kwargs):
+        return f(*args, **kwargs) if is_professor() else requires_accepted(f)(*args, **kwargs)
+    return decorator
+
+def requires_class_member(f):
+    #checks whether a student is enrolled in or a professor is teaching a class
+    @wraps(f)
+    @requires_participant
+    def decorator(*args, class_, **kwargs):
+        return f(*args, class_=class_, **kwargs) if enrolled_in(class_) else must_teach_class(f)(*args, class_=class_, **kwargs)
+    return decorator
+
+def must_teach_class(f):
+    #checks whether the user is this class's professor or ta
+    @wraps(f)
+    @requires_participant
+    def decorator(*args, class_, **kwargs):
+        if not teaches_class(class_):
+            abort(403)
+        return f(*args, class_=class_, **kwargs)
+    return decorator
+
+### routes ###
+
 @app.route('/classes')
-@student_or_professor
-@requires_admin
+@requires_participant
+@requires_professor
 def classes():
-    classes = [class_id for class_id in class_list if teaches_class(class_id)] if is_professor() else data.get('classes')
-    return render_template('classes.html', class_list=class_list, classes=classes)
+    #gets the list of classes taught if a professor or enrolled if a student
+    classes = [class_ for class_ in class_list.values() if teaches_class(class_)] if is_professor() else data.get('classes')
+    return render_template('classes.html', classes=classes)
 
 @app.route('/classes/<string:class_id>')
-@is_class_member
-@requires_admin
-def class_page(*, class_id):
-    links = data.get('links', user=class_id)
-    return render_template('class_page.html', links=links, **class_list[class_id])
+@requires_valid_class
+@requires_class_member
+@requires_professor
+def class_page(*, class_):
+    links = data.get('links', user=class_['id'])
+    return render_template('classes/class_page.html', links=links, **class_)
 
-@app.route('/classes/<string:class_id>/<int:link_id>')
-@is_class_member
-@requires_admin
-def link_page(*, class_id, link_id):
-    links = data.get('links', user=class_id)
-    link = find_link(link_id, links)
-    if not link:
-        abort(404)
-    return render_template('link_page.html', class_id=class_id, **link)
+###
+
+@app.route('/classes/<string:class_id>/upload', methods=['GET', 'POST'])
+@requires_valid_class
+@must_teach_class
+@requires_professor
+def upload_link(*, class_):
+    return {
+        'GET': upload_link_get,
+        'POST': upload_link_post
+    }[request.method](class_=class_)
+
+def upload_link_get(*, class_):
+    #finds all containers and creates id:name key-value pairs from them
+    containers = {link['id']: link['name'] for link in find_containers(data.get('links', user=class_['id']) or [])}
+    return render_template('classes/link_upload.html', class_=class_, containers=containers)
+
+def upload_link_post(*, class_):
+    fields = request.form.to_dict()
+
+    #the container is the array in which to post the link - defaults to the class link list
+    links = data.get('links', user=class_['id']) or []
+    container = find_link(fields.pop('container'), links)['link'] if 'container' in fields else links
+    
+    #containers use the link field to store children
+    if fields.get('type') == 'container':
+        fields['link'] = []
+    
+    #assigns a random id to the link
+    while not 'id' in fields or find_link(fields['id'], links):
+        fields['id'] = f'{random.randint(0, 9999999999):010d}'
+    
+    #updates the database
+    container.append(fields)
+    data.set('links', links, user=class_['id'])
+
+    return redirect(url_for('link_page', class_id=class_['id'], link_id=fields['id']), 303)
+
+###
+
+@app.route('/classes/<string:class_id>/<string:link_id>')
+@requires_valid_class
+@requires_class_member
+@requires_valid_link
+@requires_professor
+def link_page(*, class_, link):
+    return render_template('classes/link_page.html', class_=class_, **link)
+
+@app.route('/classes/<string:class_id>/<string:link_id>/container')
+@requires_valid_class
+@requires_class_member
+@requires_valid_link
+@requires_professor
+def link_container(*, class_, link):
+    #find the container of the specified link
+    links = data.get('links', user=class_['id'])
+    container = find_container(link['id'], links)
+
+    #redirect to the class page if the container is the class link list
+    if container == links:
+        return redirect(url_for('class_page', class_id=class_['id']), 303)
+    else:
+        container = find_link(container, links, key='link')
+        return redirect(url_for('link_page', class_id=class_['id'], link_id=container['id']), 303)
+
+@app.route('/classes/<string:class_id>/<string:link_id>/delete')
+@requires_valid_class
+@must_teach_class
+@requires_valid_link
+@requires_professor
+def delete_link(*, class_, link):
+    #removes the link from its container
+    links = data.get('links', user=class_['id'])
+    find_container(link['id'], links).remove(link)
+    data.set('links', links, user=class_['id'])
+
+    return redirect(url_for('class_page', class_id=class_['id']), 303)

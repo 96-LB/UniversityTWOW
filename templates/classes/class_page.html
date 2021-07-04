@@ -5,9 +5,9 @@
 <ul>
     {%- for link in link_list %}
     <li>
-        {%- if link['id'] is iterable %}
+        {%- if link['type'] == 'container' %}
         {{link['name']}}
-        {%- filter indent(width=8) %}{{expand(link['id'])}}{%- endfilter %}
+        {%- filter indent(width=8) %}{{expand(link['link'])}}{%- endfilter %}
         {%- else %}
         <a href="{{url_for('link_page', class_id=id, link_id=link['id'])}}">{{link['name']}}</a>
         {%- endif %}
@@ -37,5 +37,10 @@
     Materials:
 </h3>
 {{expand(links)}}
+{%- endif %}
+{%- if is_professor() %}
+<div>
+    <a href="{{url_for('upload_link', class_id=id)}}">Upload new materials</a>
+</div>
 {%- endif %}
 {% endblock %}

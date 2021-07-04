@@ -16,7 +16,7 @@ def is_page(page):
     except:
         return False
 
-def application_in_progress(f):
+def requires_application_in_progress(f):
     #redirects to the application page unless either of the conditions are met:
     #1. the user has started but not submitted an application
     #2. the user is an administrator
@@ -30,7 +30,7 @@ def application_in_progress(f):
             return f(*args, **kwargs)
     return decorator
 
-def accepted(f):
+def requires_accepted(f):
     #redirects to the application page unless the user's application has been accepted
     @wraps(f)
     @requires_authorization
@@ -75,7 +75,7 @@ def application_post():
 ###
 
 @app.route('/application/<int:page>', methods=['GET', 'POST'])
-@application_in_progress
+@requires_application_in_progress
 def application_page(*, page):
     if not is_page(page):
         abort(404)
@@ -119,14 +119,14 @@ def application_page_post(*, page):
 ###
 
 @app.route('/application/update')
-@accepted
+@requires_accepted
 def are_you_sure():
     return render_template('application/update.html')
 
 ###
 
 @app.route('/application/decision')
-@accepted
+@requires_accepted
 def decision():
     #grab information from the application
     name = data.get('page1').get('name', [discord.fetch_user().username])[0]

@@ -1,0 +1,32 @@
+{% extends 'classes/class_page.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+<div>
+    <a href="{{url_for('class_page', class_id=class_['id'])}}">Return to your class page</a>
+</div>
+<h2>
+    {{name}}
+</h2>
+{%- if description %}
+<p>
+    {{description}}
+</p>
+{%- endif %}
+<hr>
+<div>
+    {%- if type == 'link' %}
+    <a href="{{link}}">{{link}}</a>
+    {%- elif type == 'embed' %}
+    <iframe src="{{link}}" width=1024 height=576></iframe>
+    {%- elif type == 'image' %}
+    <img src="{{link}}">
+    {%- elif type == 'container' and link %}
+    {{expand(link)}}
+    {%- elif type == 'container' %}
+    This container is empty.
+    {%- else %}
+    Unsupported material type
+    {%- endif %}
+</div>
+{% endblock %}

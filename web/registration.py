@@ -1,11 +1,11 @@
 import core.data as data
 from core.web import app
-from web.application import accepted
+from web.application import requires_accepted
 from web.classes import class_list
 from flask import request, render_template, redirect, url_for
 
 @app.route('/register', methods=['GET', 'POST'])
-@accepted
+@requires_accepted
 def register():
     return {
         'GET': register_get,
