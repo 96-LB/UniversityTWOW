@@ -1,0 +1,45 @@
+{% extends 'classes/class_page.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+<div>
+    <a href="{{url_for('class_page', class_id=class_['id'])}}">Return to the class page</a>
+</div>
+<h2>
+    {{link['name']}}
+</h2>
+{%- if link['description'] %}
+<p>
+    {{link['description']}}
+</p>
+{%- endif %}
+<hr>
+<div>
+    {%- if link['type'] == 'link' %}
+    <a href="{{link['link']}}">{{link['link']}}</a>
+    {%- elif link['type'] == 'embed' %}
+    <iframe src="{{link['link']}}" width=1024 height=576></iframe>
+    {%- elif link['type'] == 'image' %}
+    <img src="{{link['link']}}">
+    {%- elif link['type'] == 'container' and link['link'] %}
+    {{expand(link['link'])}}
+    {%- elif link['type'] == 'container' %}
+    This container is empty.
+    {%- else %}
+    Unsupported material type
+    {%- endif %}
+</div>
+{% if link['submittable'] or (link['points'] and link['points']|float) %}
+<hr>
+{%- if link['points'] and link['points']|float %}
+<div>
+    Grade: {{grade|default('-')}}/{{link['points']}}
+</div>
+{%- endif %}
+{%- if link['submittable'] %}
+<div>
+    <a href="{{url_for('upload_submission', class_id=class_['id'], link_id=link['id'])}}">Submit</a>
+</div>
+{%- endif %}
+{%- endif %}
+{% endblock %}

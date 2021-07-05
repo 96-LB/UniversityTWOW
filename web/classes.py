@@ -1,7 +1,6 @@
 import core.data as data
 import random
 from core.web import app, discord, jinja_env
-from web.permissions import requires_admin
 from web.application import requires_accepted
 from flask import render_template, abort, request, url_for, redirect
 from flask_discord import requires_authorization
@@ -29,6 +28,10 @@ professor_list = {
     '212983348325384200': {
         'id': '212983348325384200',
         'name': 'Prof. Biscuit'
+    },
+    '210285266814894081': {
+        'id': '210285266814894081',
+        'name': 'Sidney Chou XIII'
     },
     '212805953630896128': {
         'id': '212805953630896128',
@@ -59,7 +62,7 @@ class_list = {
         'department': department_list['TWOW Design']['name'],
         'professor': professor_list['212983348325384200']['id'],
         'professor_name': professor_list['212983348325384200']['name'],
-        'ta': None,
+        'ta': professor_list['210285266814894081']['id'],
         'description': 'NOTE TO SELF: Replace this with some pretentious, academic-sounding explantion of just fucking winging it on the fly. I\'d say I couldn\'t believe that the dean\'s letting me get away with this, but I guess that\'s what a tenure\'s for.'
     },
     'COLL101': {
@@ -104,7 +107,7 @@ class_list = {
         'department': department_list['Cultural Studies']['name'],
         'professor': professor_list['212983348325384200']['id'],
         'professor_name': professor_list['212983348325384200']['name'],
-        'ta': None,
+        'ta': professor_list['210285266814894081']['id'],
         'description': '"An interdisciplinary overview of the greater historical trends over the past five years. Examination of important figures and innovations through cultural, mathematical, and interpersonal lenses."<br><br>"...did you get all that? Yeah, alright. I don\'t get why I\'m teaching this course if I\'m around for half of the curriculum. This is fucking stupid."'
     },
     'MATH141': {
@@ -166,12 +169,12 @@ def find_link(link_id, links, key='id'):
                 return link
     return None
 
-def find_container(link_id, links):
+def find_container(link_id, links, key='id'):
     for link in links:
-        if link['id'] == link_id:
+        if link[key] == link_id:
             return links
         if link['type'] == 'container':
-            container = find_container(link_id, link['link'])
+            container = find_container(link_id, link['link'], key=key)
             if container:
                 return container
     return None
@@ -211,9 +214,39 @@ def requires_valid_link(f):
     #ensures that the specified link id is valid
     @wraps(f)
     def decorator(*args, class_, link_id, **kwargs):
-        link = find_link(link_id, data.get('links', user=class_['id']))
+        link = find_link(link_id, data.get('links', user=class_['id']) or [])
         if not link:
             abort(404)
+        return f(*args, class_=class_, link=link, **kwargs)
+    return decorator
+
+def requires_submittable_link(f):
+    #ensures that the link can be submitted to
+    @wraps(f)
+    def decorator(*args, class_, link, **kwargs):
+        if not link.get('submittable'):
+            abort(404)
+        return f(*args, class_=class_, link=link, **kwargs)
+    return decorator
+
+def requires_valid_submission(f):
+    #ensures that the specified submission id is valid
+    @wraps(f)
+    def decorator(*args, class_, link, submission_id, **kwargs):
+        submission = link.get('submissions', {}).get(submission_id)
+        if not submission:
+            abort(404)
+        return f(*args, class_=class_, link=link, submission=submission, **kwargs)
+    return decorator
+
+def requires_no_submission(f):
+    #ensures that the student has not yet submitted anything
+    @wraps(f)
+    def decorator(*args, class_, link, **kwargs):
+        submission_id = data.get_id()
+        submission = link.get('submissions', {}).get(submission_id)
+        if submission:
+            return redirect(url_for('submission_page', class_id=class_['id'], link_id=link['id'], submission_id=submission_id), 303)
         return f(*args, class_=class_, link=link, **kwargs)
     return decorator
 
@@ -232,7 +265,11 @@ def requires_participant(f):
     @wraps(f)
     @requires_authorization
     def decorator(*args, **kwargs):
-        return f(*args, **kwargs) if is_professor() else requires_accepted(f)(*args, **kwargs)
+        return (
+            f(*args, **kwargs)
+            if is_professor()
+            else requires_accepted(f)(*args, **kwargs)
+        )
     return decorator
 
 def requires_class_member(f):
@@ -240,7 +277,11 @@ def requires_class_member(f):
     @wraps(f)
     @requires_participant
     def decorator(*args, class_, **kwargs):
-        return f(*args, class_=class_, **kwargs) if enrolled_in(class_) else must_teach_class(f)(*args, class_=class_, **kwargs)
+        return (
+            f(*args, class_=class_, **kwargs)
+            if enrolled_in(class_) else
+            must_teach_class(f)(*args, class_=class_, **kwargs)
+        )
     return decorator
 
 def must_teach_class(f):
@@ -253,30 +294,40 @@ def must_teach_class(f):
         return f(*args, class_=class_, **kwargs)
     return decorator
 
+def must_teach_or_own_submission(f):
+    #checks whether the user teaches or owns the submission
+    @wraps(f)
+    @requires_participant
+    def decorator(*args, class_, link, submission, **kwargs):
+        return (
+                f(*args, class_=class_, link=link, submission=submission, **kwargs)
+                if data.get_id() == submission.get('id')
+                else must_teach_class(f)(*args, class_=class_, link=link, submission=submission, **kwargs)
+        )
+    return decorator
+
+
 ### routes ###
 
 @app.route('/classes')
 @requires_participant
-@requires_professor
 def classes():
     #gets the list of classes taught if a professor or enrolled if a student
-    classes = [class_ for class_ in class_list.values() if teaches_class(class_)] if is_professor() else data.get('classes')
+    classes = [class_ for class_ in class_list.values() if teaches_class(class_)] if is_professor() else [class_list[class_] for class_ in data.get('classes')]
     return render_template('classes.html', classes=classes)
 
 @app.route('/classes/<string:class_id>')
 @requires_valid_class
 @requires_class_member
-@requires_professor
 def class_page(*, class_):
     links = data.get('links', user=class_['id'])
-    return render_template('classes/class_page.html', links=links, **class_)
+    return render_template('classes/class_page.html', class_=class_, links=links)
 
 ###
 
 @app.route('/classes/<string:class_id>/upload', methods=['GET', 'POST'])
 @requires_valid_class
 @must_teach_class
-@requires_professor
 def upload_link(*, class_):
     return {
         'GET': upload_link_get,
@@ -286,7 +337,7 @@ def upload_link(*, class_):
 def upload_link_get(*, class_):
     #finds all containers and creates id:name key-value pairs from them
     containers = {link['id']: link['name'] for link in find_containers(data.get('links', user=class_['id']) or [])}
-    return render_template('classes/link_upload.html', class_=class_, containers=containers)
+    return render_template('classes/class_page/link_upload.html', class_=class_, containers=containers)
 
 def upload_link_post(*, class_):
     fields = request.form.to_dict()
@@ -315,15 +366,13 @@ def upload_link_post(*, class_):
 @requires_valid_class
 @requires_class_member
 @requires_valid_link
-@requires_professor
 def link_page(*, class_, link):
-    return render_template('classes/link_page.html', class_=class_, **link)
+    return render_template('classes/class_page/link_page.html', class_=class_, link=link)
 
 @app.route('/classes/<string:class_id>/<string:link_id>/container')
 @requires_valid_class
 @requires_class_member
 @requires_valid_link
-@requires_professor
 def link_container(*, class_, link):
     #find the container of the specified link
     links = data.get('links', user=class_['id'])
@@ -340,7 +389,6 @@ def link_container(*, class_, link):
 @requires_valid_class
 @must_teach_class
 @requires_valid_link
-@requires_professor
 def delete_link(*, class_, link):
     #removes the link from its container
     links = data.get('links', user=class_['id'])
@@ -348,3 +396,50 @@ def delete_link(*, class_, link):
     data.set('links', links, user=class_['id'])
 
     return redirect(url_for('class_page', class_id=class_['id']), 303)
+
+###
+
+@app.route('/classes/<string:class_id>/<string:link_id>/upload', methods=['GET', 'POST'])
+@requires_valid_class
+@requires_class_member
+@requires_valid_link
+@requires_submittable_link
+@requires_no_submission
+def upload_submission(*, class_, link):
+    return {
+        'GET': upload_submission_get,
+        'POST': upload_submission_post
+    }[request.method](class_=class_, link=link)
+
+def upload_submission_get(*, class_, link):
+    return render_template('classes/class_page/link_page/submission_upload.html', class_=class_, link=link)
+
+def upload_submission_post(*, class_, link):
+    fields = request.form.to_dict()
+    fields['id'] = data.get_id()
+
+    #gets a reference to an editable copy
+    links = data.get('links', user=class_['id'])
+    link = find_link(link['id'], links)
+    
+    #adds the submission
+    submissions = link.get('submissions', {})
+    submissions[data.get_id()] = fields
+    link['submissions'] = submissions
+
+    #updates the database
+    data.set('links', links, user=class_['id'])
+
+    return redirect(url_for('submission_page', class_id=class_['id'], link_id=link['id'], submission_id=fields['id']), 303)
+
+###
+
+@app.route('/classes/<string:class_id>/<string:link_id>/<string:submission_id>')
+@requires_valid_class
+@requires_class_member
+@requires_valid_link
+@requires_submittable_link
+@requires_valid_submission
+@must_teach_or_own_submission
+def submission_page(*, class_, link, submission):
+    return render_template('classes/class_page/link_page/submission_page.html', class_=class_, link=link, submission=submission)

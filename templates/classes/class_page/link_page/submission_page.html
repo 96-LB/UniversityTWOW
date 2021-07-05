@@ -1,0 +1,31 @@
+{% extends 'classes/class_page/link_page.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+<div>
+    <a href="{{url_for('link_page', class_id=class_['id'], link_id=link['id'])}}">Return to the material page</a>
+</div>
+<h2>
+    {{link['name']}}
+</h2>
+<h3>
+    Submission from {{submission['id']}}
+</h3>
+{%- if submission['comment'] %}
+<p>
+    {{submission['comment']}}
+</p>
+{%- endif %}
+<hr>
+<div>
+    {%- if submission['type'] == 'link' %}
+    <a href="{{submission['link']}}">{{submission['link']}}</a>
+    {%- elif submission['type'] == 'embed' %}
+    <iframe src="{{submission['link']}}" width=1024 height=576></iframe>
+    {%- elif submission['type'] == 'image' %}
+    <img src="{{submission['link']}}">
+    {%- else %}
+    Unsupported material type
+    {%- endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'classes/class_page/link_upload.html' %}
+{% block css %}{{super()}}{% endblock %}
+{% block js %}{{super()}}{% endblock %}
+{% block body %}
+<div>
+    <a href="{{url_for('link_page', class_id=class_['id'], link_id=link['id'])}}">Return to the material page</a>
+</div>
+<form method="POST">
+    <fieldset>
+        <legend>
+            Upload submission to {{link['title']}}
+        </legend>
+    {%- filter indent(width=8) %}
+{{text('link')}}
+{{text('comment', required=False)}}
+{{select('type', {'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'})}}
+    {%- endfilter %}
+    </fieldset>
+    <input type="submit" value="UPLOAD" id="form_save">
+</form>
+{% endblock %}

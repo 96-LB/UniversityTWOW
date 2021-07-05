@@ -4,7 +4,7 @@
 {% macro text(name, required=True) -%}
 <div>
     <label>
-        {{name|title}}:
+        {{name|title}}{{'*' if required}}:
         <input type="text" name="{{name}}"{{' required' if required}}>
     </label>
 </div>
@@ -12,13 +12,29 @@
 {% macro select(name, choices, required=True) -%}
 <div>
     <label>
-        {{name|title}}:
+        {{name|title}}{{'*' if required}}:
         <select name="{{name}}"{{' required' if required}}>
             <option value="" selected disabled hidden>-- select --</option>
             {%- for key, value in choices.items() %}
             <option value="{{key}}">{{value}}</option>
             {%- endfor %}
         </select>
+    </label>
+</div>
+{%- endmacro %}
+{% macro checkbox(name, required=True) -%}
+<div>
+    <label>
+        {{name|title}}{{'*' if required}}:
+        <input type="checkbox" name="{{name}}" value="{{name}}"{{' required' if required}}>
+    </label>
+</div>
+{%- endmacro %}
+{% macro number(name, required=True) -%}
+<div>
+    <label>
+        {{name|title}}{{'*' if required}}:
+        <input type="number" name="{{name}}" value=0 min=0{{' required' if required}}>
     </label>
 </div>
 {%- endmacro %}
@@ -29,12 +45,14 @@
 <form method="POST">
     <fieldset>
         <legend>
-            Upload to {{class_id}}
+            Upload to {{class_['id']}}
         </legend>
     {%- filter indent(width=8) %}
 {{text('link')}}
 {{text('name')}}
-{{text('description')}}
+{{text('description', required=False)}}
+{{checkbox('submittable', required=False)}}
+{{number('points')}}
 {{select('type', {'container': 'Empty Container', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'})}}
 {{select('container', containers, required=False)}}
     {%- endfilter %}

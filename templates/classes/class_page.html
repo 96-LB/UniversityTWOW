@@ -9,7 +9,7 @@
         {{link['name']}}
         {%- filter indent(width=8) %}{{expand(link['link'])}}{%- endfilter %}
         {%- else %}
-        <a href="{{url_for('link_page', class_id=id, link_id=link['id'])}}">{{link['name']}}</a>
+        <a href="{{url_for('link_page', class_id=class_['id'], link_id=link['id'])}}">{{link['name']}}</a>
         {%- endif %}
     </li>
     {%- endfor %}
@@ -20,13 +20,13 @@
     <a href="{{url_for('classes')}}">Return to your class list</a>
 </div>
 <h1>
-    {{id}}
+    {{class_['id']}}
 </h1>
 <h2>
-    {{title}}
+    {{class_['title']}}
 </h2>
 <p>
-    <i>{{description|safe}}</i>
+    <i>{{class_['description']|safe}}</i>
 </p>
 {%- if not links %}
 <div>
@@ -40,7 +40,7 @@
 {%- endif %}
 {%- if is_professor() %}
 <div>
-    <a href="{{url_for('upload_link', class_id=id)}}">Upload new materials</a>
+    <a href="{{url_for('upload_link', class_id=class_['id'])}}">Upload new materials</a>
 </div>
 {%- endif %}
 {% endblock %}
