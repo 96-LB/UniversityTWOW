@@ -4,10 +4,6 @@ from replit import db
 from copy import deepcopy
 from flask import session
 
-a = json.loads(db['296389808815734794'])
-a['application']['accepted'] = False
-db['296389808815734794'] = json.dumps(a)
-
 #stores any loaded users
 _cache = {}
 
