@@ -1,6 +1,31 @@
 {% extends 'classes/class_page.html' %}
-{% block css %}{% endblock %}
-{% block js %}{% endblock %}
+{% block css %}form.css{% endblock %}
+{% block js %}form.css{% endblock %}
+{%- macro display(material) %}
+{%- if material['text'] %}
+<p>
+    {{material['text']}}
+</p>
+{%- endif %}
+{%- if (material['link'] and material['type'] != 'empty') or material['type'] == 'container'%}
+<hr>
+<div>
+    {%- if material['type'] == 'link' %}
+    <a href="{{material['link']}}">{{material['link']}}</a>
+    {%- elif material['type'] == 'embed' %}
+    <iframe src="{{material['link']}}" width=1024 height=576></iframe>
+    {%- elif material['type'] == 'image' %}
+    <img src="{{material['link']}}" alt="{{material['link']}}">
+    {%- elif material['type'] == 'container' and material['link'] %}
+    {{expand(material['link'])}}
+    {%- elif material['type'] == 'container' %}
+    This container is empty.
+    {%- else %}
+    Unsupported material type
+    {%- endif %}
+</div>
+{%- endif %}
+{%- endmacro %}
 {% block body %}
 <div>
     <a href="{{url_for('class_page', class_id=class_['id'])}}">Return to the class page</a>
@@ -8,38 +33,43 @@
 <h2>
     {{link['name']}}
 </h2>
-{%- if link['description'] %}
-<p>
-    {{link['description']}}
-</p>
-{%- endif %}
+{{display(link)}}
+{%- if link['submittable'] or (link['points'] and link['points']|float) %}
 <hr>
-<div>
-    {%- if link['type'] == 'link' %}
-    <a href="{{link['link']}}">{{link['link']}}</a>
-    {%- elif link['type'] == 'embed' %}
-    <iframe src="{{link['link']}}" width=1024 height=576></iframe>
-    {%- elif link['type'] == 'image' %}
-    <img src="{{link['link']}}">
-    {%- elif link['type'] == 'container' and link['link'] %}
-    {{expand(link['link'])}}
-    {%- elif link['type'] == 'container' %}
-    This container is empty.
+    {%- if is_professor() %}
+<form method="POST">
+    <fieldset>
+        <legend>
+            Submissions/Grades
+        </legend>
+        <ul>
+        {%- for student in students %}
+            <li>
+            {%- if student['submission'] %}
+                <a href="{{url_for('submission_page', class_id=class_['id'], link_id=link['id'], submission_id=student['id'])}}">{{student['id']}}</a>
+            {%- else %}
+                {{student['id']}}
+            {%- endif %}
+            {%- if link['points'] and link['points']|float -%}
+                : <input type="number" name="{{student['id']}}" value="{{student['grade'] if student['grade'] is not none}}"> / {{link['points']}}
+            {%- endif %}
+            </li>
+        {%- endfor %}
+        </ul>
+    </fieldset>
+    <input type="submit" value="SAVE" id="form_save" >
+</form>
     {%- else %}
-    Unsupported material type
-    {%- endif %}
-</div>
-{% if link['submittable'] or (link['points'] and link['points']|float) %}
-<hr>
-{%- if link['points'] and link['points']|float %}
+        {%- if link['points'] and link['points']|float %}
 <div>
-    Grade: {{grade|default('-')}}/{{link['points']}}
+    Grade: {{grade}}/{{link['points']}}
 </div>
-{%- endif %}
-{%- if link['submittable'] %}
+        {%- endif %}
+        {%- if link['submittable'] %}
 <div>
     <a href="{{url_for('upload_submission', class_id=class_['id'], link_id=link['id'])}}">Submit</a>
 </div>
-{%- endif %}
+        {%- endif %}
+    {%- endif %}
 {%- endif %}
 {% endblock %}

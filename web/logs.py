@@ -12,6 +12,6 @@ def log():
         print(f'{user} visited {request.path} ({request.method})')
         
         #updates the database
-        logs = data.get('logs', user=f'logs-{date.today()}') or []
+        logs = data.get('logs', user=f'~zzz~logs-{date.today()}') or []
         logs.append([time(), user, request.path, request.method])
-        data.set('logs', logs, user=f'logs-{date.today()}')
+        data.set('logs', logs, user=f'~zzz~logs-{date.today()}')

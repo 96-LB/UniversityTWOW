@@ -48,12 +48,12 @@
             Upload to {{class_['id']}}
         </legend>
     {%- filter indent(width=8) %}
-{{text('link')}}
 {{text('name')}}
-{{text('description', required=False)}}
+{{text('text', required=False)}}
+{{text('link', required=False)}}
+{{select('type', {'empty': 'No Link', 'container': 'Empty Container', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'})}}
 {{checkbox('submittable', required=False)}}
 {{number('points')}}
-{{select('type', {'container': 'Empty Container', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'})}}
 {{select('container', containers, required=False)}}
     {%- endfilter %}
     </fieldset>

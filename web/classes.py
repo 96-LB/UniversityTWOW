@@ -362,12 +362,75 @@ def upload_link_post(*, class_):
 
 ###
 
-@app.route('/classes/<string:class_id>/<string:link_id>')
+@app.route('/classes/<string:class_id>/<string:link_id>', methods=['GET', 'POST'])
 @requires_valid_class
 @requires_class_member
 @requires_valid_link
 def link_page(*, class_, link):
-    return render_template('classes/class_page/link_page.html', class_=class_, link=link)
+    return {
+        'GET': link_page_get,
+        'POST': link_page_post
+    }[request.method](class_=class_, link=link)
+
+def link_page_get(*, class_, link):
+    #reads information from the link data
+    students = []
+    grades = link.get('grades', {})
+    submissions = link.get('submissions', {})
+
+    #try to parse grade into a number
+    grade = grades.get(data.get_id())
+    try:
+        grade = int(grade)
+    except:
+        try:
+            grade = float(grade)
+        except:
+            grade = '-'
+    
+    #check if the link is gradeable
+    try:
+        points = float(link['points'])
+    except:
+        points = 0
+
+    #professors get a list of students and their submissions and grades
+    if is_professor() and (points or link.get('submittable')):
+        for student in data.get('students', user=class_['id']):
+            students.append({
+                'id': student,
+                'submission': submissions.get(student),
+                'grade': grades.get(student)
+            })
+    
+    return render_template('classes/class_page/link_page.html', class_=class_, link=link, grade=grade, students=students)
+
+@must_teach_class
+def link_page_post(*, class_, link):
+    #ensures that the link is gradeable
+    try:
+        points = float(link['points'])
+    except:
+        points = 0
+    if points:
+        #deletes any non-float values
+        fields = request.form.to_dict()
+        for field in list(fields.keys()):
+            try:
+                float(fields[field])
+            except:
+                del fields[field]
+
+        #gets a reference to an editable copy
+        links = data.get('links', user=class_['id'])
+        link = find_link(link['id'], links)
+
+        #updates the database
+        link['grades'] = fields
+        data.set('links', links, user=class_['id'])
+
+    return redirect(url_for('link_page', class_id=class_['id'], link_id=link['id']), 303)
+
 
 @app.route('/classes/<string:class_id>/<string:link_id>/container')
 @requires_valid_class

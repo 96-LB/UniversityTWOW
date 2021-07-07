@@ -22,12 +22,19 @@ def requires_application_in_progress(f):
     #2. the user is an administrator
     @wraps(f)
     @requires_authorization
-    def decorator(*args, **kwargs):
+    def ARCHIVED(*args, **kwargs):
         app = data.get('application')
         if (not app.get('next_page') or app.get('submitted')) and not is_admin():
             return redirect(url_for('application'), 303)
         else:
             return f(*args, **kwargs)
+
+    #the user must now be an administrator
+    @wraps(f)
+    @requires_authorization
+    def decorator(*args, **kwargs):
+        if not is_admin():
+            return redirect(url_for('application'), 303)
     return decorator
 
 def requires_accepted(f):
@@ -49,7 +56,7 @@ def requires_accepted(f):
 def application():
     return {
         'GET': application_get,
-        'POST': application_post
+        'POST': application_get #ARCHIVED: application_post
     }[request.method]()
 
 def application_get():
@@ -63,7 +70,7 @@ def application_post():
         data.set('application', {
             'submitted': True
         })
-        roles.add_role('APPLICANT', reason='submitted application')
+        roles.add_roles('APPLICANT', reason='submitted application')
         return redirect(url_for('application'), 303)
     else:
         #starts the application
@@ -133,9 +140,9 @@ def decision():
     major = data.get('page5').get('major', ['Undecided'])[0]
     
     #update their server roles
-    roles.remove_role('APPLICANT', reason='viewed decision')
-    roles.add_role('ENROLLED', reason='viewed decision')
-    roles.add_role(major, reason='viewed decision')
+    roles.remove_roles('APPLICANT', reason='viewed decision')
+    roles.add_roles('ENROLLED', reason='viewed decision')
+    roles.add_roles(major, reason='viewed decision')
     
     return render_template('application/decision.html', name=name, major=major)
 
@@ -150,7 +157,7 @@ def accept():
         app = data.get('application', user=user)
         if app.get('submitted'):
             #notify them and accept their application
-            dm.dm(user, 'An update has been posted to your application status page. You may access the portal here: https://universitytwow.cf')
+            dm.dm(user, 'An update has been posted to your application status page. You may access the portal here: https://universitytwow.cf/application')
             data.set('application', {'accepted': True}, user=user)
             students.append(user)
     return {'accepted': students}
