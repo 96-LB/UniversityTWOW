@@ -366,7 +366,7 @@ def upload_link_post(*, class_):
 @requires_valid_class
 @requires_class_member
 @requires_valid_link
-def link_page(*, class_, link):
+def link_page(*, class_, link):  
     return {
         'GET': link_page_get,
         'POST': link_page_post
@@ -376,6 +376,7 @@ def link_page_get(*, class_, link):
     #reads information from the link data
     students = []
     grades = link.get('grades', {})
+    comments = link.get('comments', {})
     submissions = link.get('submissions', {})
 
     #try to parse grade into a number
@@ -387,7 +388,8 @@ def link_page_get(*, class_, link):
             grade = float(grade)
         except:
             grade = '-'
-    
+    comment = comments.get(data.get_id())
+
     #check if the link is gradeable
     try:
         points = float(link['points'])
@@ -400,10 +402,11 @@ def link_page_get(*, class_, link):
             students.append({
                 'id': student,
                 'submission': submissions.get(student),
-                'grade': grades.get(student)
+                'grade': grades.get(student),
+                'comment': comments.get(student)
             })
     
-    return render_template('classes/class_page/link_page.html', class_=class_, link=link, grade=grade, students=students)
+    return render_template('classes/class_page/link_page.html', class_=class_, link=link, grade=grade, comment=comment, students=students)
 
 @must_teach_class
 def link_page_post(*, class_, link):
@@ -413,20 +416,29 @@ def link_page_post(*, class_, link):
     except:
         points = 0
     if points:
-        #deletes any non-float values
+        grades = {}
+        comments = {}
+
+        #splits the grades (which must be float-parseable)and comments
         fields = request.form.to_dict()
-        for field in list(fields.keys()):
-            try:
-                float(fields[field])
-            except:
-                del fields[field]
+        for key, value in fields.items():
+            if key.startswith('grade-'):
+                try:
+                    float(value)
+                    grades[key[6:]] = value
+                except:
+                    pass
+            elif key.startswith('comment-'):
+                comments[key[8:]] = value
+                
 
         #gets a reference to an editable copy
         links = data.get('links', user=class_['id'])
         link = find_link(link['id'], links)
 
         #updates the database
-        link['grades'] = fields
+        link['grades'] = grades
+        link['comments'] = comments
         data.set('links', links, user=class_['id'])
 
     return redirect(url_for('link_page', class_id=class_['id'], link_id=link['id']), 303)
@@ -505,4 +517,20 @@ def upload_submission_post(*, class_, link):
 @requires_valid_submission
 @must_teach_or_own_submission
 def submission_page(*, class_, link, submission):
-    return render_template('classes/class_page/link_page/submission_page.html', class_=class_, link=link, submission=submission)
+    #reads information from the link data
+    grades = link.get('grades', {})
+    comments = link.get('comments', {})
+    submissions = link.get('submissions', {})
+
+    #try to parse grade into a number
+    grade = grades.get(submission['id'])
+    try:
+        grade = int(grade)
+    except:
+        try:
+            grade = float(grade)
+        except:
+            grade = '-'
+    comment = comments.get(submission['id'])
+
+    return render_template('classes/class_page/link_page/submission_page.html', class_=class_, link=link, submission=submission, grade=grade, comment=comment)

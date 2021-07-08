@@ -12,4 +12,15 @@
     Submission from {{submission['id']}}
 </h3>
 {{display(submission)}}
+{%- if link['points'] and link['points']|float %}
+<hr>
+<div>
+    Grade: {{grade}}/{{link['points']}}
+</div>
+{%- if comment %}
+<div>
+    Comment: {{comment}}
+</div>
+{%- endif %}
+{%- endif %}
 {% endblock %}

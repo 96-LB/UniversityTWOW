@@ -9,6 +9,14 @@
     </label>
 </div>
 {%- endmacro %}
+{% macro multiline(name, required=True) -%}
+<div>
+    <label>
+        {{name|title}}{{'*' if required}}:
+        <textarea name="{{name}}"{{' required' if required}}></textarea>
+    </label>
+</div>
+{%- endmacro %}
 {% macro select(name, choices, required=True) -%}
 <div>
     <label>
@@ -49,7 +57,7 @@
         </legend>
     {%- filter indent(width=8) %}
 {{text('name')}}
-{{text('text', required=False)}}
+{{multiline('text', required=False)}}
 {{text('link', required=False)}}
 {{select('type', {'empty': 'No Link', 'container': 'Empty Container', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'})}}
 {{checkbox('submittable', required=False)}}

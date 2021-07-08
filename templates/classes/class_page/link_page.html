@@ -51,7 +51,7 @@
                 {{student['id']}}
             {%- endif %}
             {%- if link['points'] and link['points']|float -%}
-                : <input type="number" name="{{student['id']}}" value="{{student['grade'] if student['grade'] is not none}}"> / {{link['points']}}
+                : <input type="number" name="grade-{{student['id']}}" value="{{student['grade'] if student['grade'] is not none}}"> / {{link['points']}} <input type="text" name="comment-{{student['id']}}" value="{{student['comment'] if student['comment'] is not none}}">
             {%- endif %}
             </li>
         {%- endfor %}
@@ -64,6 +64,11 @@
 <div>
     Grade: {{grade}}/{{link['points']}}
 </div>
+            {%- if comment %}
+<div>
+    Comment: {{comment}}
+</div>
+            {%- endif %}
         {%- endif %}
         {%- if link['submittable'] %}
 <div>

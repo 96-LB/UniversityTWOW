@@ -11,8 +11,8 @@
             Upload submission to {{link['title']}}
         </legend>
     {%- filter indent(width=8) %}
-{{text('link')}}
-{{text('comment', required=False)}}
+{{multiline('text', required=False)}}
+{{text('link', required=False)}}
 {{select('type', {'empty': 'No Link', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'})}}
     {%- endfilter %}
     </fieldset>
