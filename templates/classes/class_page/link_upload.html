@@ -1,48 +1,50 @@
 {% extends 'base.html' %}
 {% block css %}form.css{% endblock %}
 {% block js %}form.js{% endblock %}
-{% macro text(name, required=True) -%}
+{% macro text(name, value='', required=True) -%}
 <div>
     <label>
         {{name|title}}{{'*' if required}}:
-        <input type="text" name="{{name}}"{{' required' if required}}>
+        <input type="text" name="{{name}}" value="{{value}}"{{' required' if required}}>
     </label>
 </div>
 {%- endmacro %}
-{% macro multiline(name, required=True) -%}
+{% macro multiline(name, value='', required=True) -%}
 <div>
     <label>
         {{name|title}}{{'*' if required}}:
-        <textarea name="{{name}}"{{' required' if required}}></textarea>
+        <textarea name="{{name}}"{{' required' if required}}>{{value}}</textarea>
     </label>
 </div>
 {%- endmacro %}
-{% macro select(name, choices, required=True) -%}
+{% macro select(name, choices, value='', required=True) -%}
 <div>
     <label>
         {{name|title}}{{'*' if required}}:
         <select name="{{name}}"{{' required' if required}}>
-            <option value="" selected disabled hidden>-- select --</option>
-            {%- for key, value in choices.items() %}
-            <option value="{{key}}">{{value}}</option>
+            {%- if not required or value not in choices.keys() %}
+            <option value=""{{' selected' if value not in choices.keys()}}{{' disabled hidden' if required}}>-- select --</option>
+            {%- endif %}
+            {%- for key, choice in choices.items() %}
+            <option value="{{key}}"{{' selected' if key == value}}>{{choice}}</option>
             {%- endfor %}
         </select>
     </label>
 </div>
 {%- endmacro %}
-{% macro checkbox(name, required=True) -%}
+{% macro checkbox(name, checked=False, required=True) -%}
 <div>
     <label>
         {{name|title}}{{'*' if required}}:
-        <input type="checkbox" name="{{name}}" value="{{name}}"{{' required' if required}}>
+        <input type="checkbox" name="{{name}}" value="{{name}}"{{' checked' if checked}}{{' required' if required}}>
     </label>
 </div>
 {%- endmacro %}
-{% macro number(name, required=True) -%}
+{% macro number(name, value=0, required=True) -%}
 <div>
     <label>
         {{name|title}}{{'*' if required}}:
-        <input type="number" name="{{name}}" value=0 min=0{{' required' if required}}>
+        <input type="number" name="{{name}}" value="{{value}}" min=0{{' required' if required}}>
     </label>
 </div>
 {%- endmacro %}
@@ -56,13 +58,13 @@
             Upload to {{class_['id']}}
         </legend>
     {%- filter indent(width=8) %}
-{{text('name')}}
-{{multiline('text', required=False)}}
-{{text('link', required=False)}}
-{{select('type', {'empty': 'No Link', 'container': 'Empty Container', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'})}}
-{{checkbox('submittable', required=False)}}
-{{number('points')}}
-{{select('container', containers, required=False)}}
+{{text('name', link['name'] or '')}}
+{{multiline('text', link['text'] or '', required=False)}}
+{{text('link', link['link'] or '', required=False)}}
+{{select('type', {'empty': 'No Link', 'container': 'Empty Container', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'}, link['type'] or '')}}
+{{checkbox('submittable', link['submittable'], required=False)}}
+{{number('points', link['points'] or 0)}}
+{{select('container', containers, link['container'] or '', required=False)}}
     {%- endfilter %}
     </fieldset>
     <input type="submit" value="UPLOAD" id="form_save">

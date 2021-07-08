@@ -15,7 +15,7 @@ app.jinja_env.filters['debug'] = lambda x: print(x) or ''
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = 'true' #suppresses reverse-proxy http errors - proxy should already force https
 
 #loads in discord environment variables
-for key in ['CLIENT_ID', 'CLIENT_SECRET', 'REDIRECT_URI', 'BOT_TOKEN']:
+for key in ['CLIENT_ID', 'CLIENT_SECRET', 'REDIRECT_URI']:
     key = 'DISCORD_' + key
     app.config[key] = os.environ[key]
 

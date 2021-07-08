@@ -137,6 +137,15 @@ class_list = {
         'ta': None,
         'description': '<i>[NOTE: Due to popular demand, two sections have been opened for this course. You may not sign up for both TWOW101-1 and TWOW101-2.]</i>'
     },
+    'ARG403': {
+        'id': 'ARG403',
+        'title': 'Alternate Reality Games (secret)',
+        'department': department_list['Sociology']['name'],
+        'professor': professor_list['849279934987894805']['id'],
+        'professor_name': professor_list['849279934987894805']['name'],
+        'ta': professor_list['236257776421175296']['id'],
+        'description': '&nbsp;'
+    },
     'ARG404': {
         'id': 'ARG404',
         'title': 'Alternate Reality Games',
@@ -334,22 +343,37 @@ def upload_link(*, class_):
         'POST': upload_link_post
     }[request.method](class_=class_)
 
-def upload_link_get(*, class_):
+def upload_link_get(*, class_, link=None):
     #finds all containers and creates id:name key-value pairs from them
-    containers = {link['id']: link['name'] for link in find_containers(data.get('links', user=class_['id']) or [])}
-    return render_template('classes/class_page/link_upload.html', class_=class_, containers=containers)
+    containers = {container['id']: container['name'] for container in find_containers(data.get('links', user=class_['id']) or []) if not link or container['id'] != link['id']}
+    return render_template('classes/class_page/link_upload.html', class_=class_, containers=containers, link=link)
 
-def upload_link_post(*, class_):
+def upload_link_post(*, class_, link=None):
     fields = request.form.to_dict()
 
     #the container is the array in which to post the link - defaults to the class link list
     links = data.get('links', user=class_['id']) or []
-    container = find_link(fields.pop('container'), links)['link'] if 'container' in fields else links
+    try:
+        container = find_link(fields.pop('container'), links)['link']
+    except:
+        container = links
     
     #containers use the link field to store children
     if fields.get('type') == 'container':
         fields['link'] = []
     
+    if link:
+        #containers have special links that need to be preserved
+        if link.get('type') == 'container' and fields.get('type') == 'container':
+            fields['link'] = link['link']
+        #populates any other unset fields
+        for field in link:
+            #checkboxes don't appear when unchecked - treat an unset checkbox as set to false
+            if field == 'submittable':
+                continue
+            if field not in fields:
+                fields[field] = link[field]
+
     #assigns a random id to the link
     while not 'id' in fields or find_link(fields['id'], links):
         fields['id'] = f'{random.randint(0, 9999999999):010d}'
@@ -443,6 +467,34 @@ def link_page_post(*, class_, link):
 
     return redirect(url_for('link_page', class_id=class_['id'], link_id=link['id']), 303)
 
+###
+
+@app.route('/classes/<string:class_id>/<string:link_id>/edit', methods=['GET', 'POST'])
+@requires_valid_class
+@must_teach_class
+@requires_valid_link
+def link_edit(*, class_, link):
+    return {
+        'GET': link_edit_get,
+        'POST': link_edit_post
+    }[request.method](class_=class_, link=link)
+
+def link_edit_get(*, class_, link):
+    #find the container of the specified link
+    links = data.get('links', user=class_['id'])
+    container = find_container(link['id'], links)
+    if container != links:
+        link['container'] = find_link(container, links, key='link')['id']
+    
+    return upload_link_get(class_=class_, link=link)
+
+
+def link_edit_post(*, class_, link):
+    #delete and reupload the link
+    delete_link(class_id=class_['id'], link_id=link['id'])
+    return upload_link_post(class_=class_, link=link)
+
+###
 
 @app.route('/classes/<string:class_id>/<string:link_id>/container')
 @requires_valid_class
@@ -520,7 +572,6 @@ def submission_page(*, class_, link, submission):
     #reads information from the link data
     grades = link.get('grades', {})
     comments = link.get('comments', {})
-    submissions = link.get('submissions', {})
 
     #try to parse grade into a number
     grade = grades.get(submission['id'])
