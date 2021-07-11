@@ -561,7 +561,7 @@ def upload_submission_post(*, class_, link):
 
 ###
 
-@app.route('/classes/<string:class_id>/<string:link_id>/<string:submission_id>')
+@app.route('/classes/<string:class_id>/<string:link_id>/<string:submission_id>', methods=['GET', 'POST'])
 @requires_valid_class
 @requires_class_member
 @requires_valid_link
@@ -569,6 +569,12 @@ def upload_submission_post(*, class_, link):
 @requires_valid_submission
 @must_teach_or_own_submission
 def submission_page(*, class_, link, submission):
+    return {
+        'GET': submission_page_get,
+        'POST': submission_page_post
+    }[request.method](class_=class_, link=link, submission=submission)
+
+def submission_page_get(*, class_, link, submission):
     #reads information from the link data
     grades = link.get('grades', {})
     comments = link.get('comments', {})
@@ -585,3 +591,34 @@ def submission_page(*, class_, link, submission):
     comment = comments.get(submission['id'])
 
     return render_template('classes/class_page/link_page/submission_page.html', class_=class_, link=link, submission=submission, grade=grade, comment=comment)
+
+@must_teach_class
+def submission_page_post(*, class_, link, submission):
+    #ensures that the link is gradeable
+    try:
+        points = float(link['points'])
+    except:
+        points = 0
+    if points:
+        grades = link.get('grades', {})
+        comments = link.get('comments', {})
+        
+        #updates the data, ensuring that the grade is float-parseable
+        fields = request.form.to_dict()
+        try:
+            grades[submission['id']] =  fields.get('grade')
+            float(grades[submission['id']])
+        except:
+            grades[submission['id']] = None
+        comments[submission['id']] = fields.get('comment')
+                
+        #gets a reference to an editable copy
+        links = data.get('links', user=class_['id'])
+        link = find_link(link['id'], links)
+
+        #updates the database
+        link['grades'] = grades
+        link['comments'] = comments
+        data.set('links', links, user=class_['id'])
+
+    return redirect(url_for('submission_page', class_id=class_['id'], link_id=link['id'], submission_id=submission['id']), 303)

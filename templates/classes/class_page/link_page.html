@@ -1,10 +1,10 @@
 {% extends 'classes/class_page.html' %}
 {% block css %}form.css{% endblock %}
-{% block js %}form.css{% endblock %}
+{% block js %}form.js{% endblock %}
 {%- macro display(material) %}
 {%- if material['text'] %}
 <p>
-    {{material['text']}}
+    {{material['text']|replace('\n', '\n<br>\n'|safe)}}
 </p>
 {%- endif %}
 {%- if (material['link'] and material['type'] != 'empty') or material['type'] == 'container'%}
@@ -57,7 +57,7 @@
         {%- endfor %}
         </ul>
     </fieldset>
-    <input type="submit" value="SAVE" id="form_save" >
+    <input type="submit" value="SAVE" id="form_save" disabled>
 </form>
     {%- else %}
         {%- if link['points'] and link['points']|float %}

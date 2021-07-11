@@ -1,6 +1,6 @@
 {% extends 'classes/class_page/link_page.html' %}
-{% block css %}{% endblock %}
-{% block js %}{% endblock %}
+{% block css %}{{super()}}{% endblock %}
+{% block js %}{{super()}}{% endblock %}
 {% block body %}
 <div>
     <a href="{{url_for('link_page', class_id=class_['id'], link_id=link['id'])}}">Return to the material page</a>
@@ -14,13 +14,25 @@
 {{display(submission)}}
 {%- if link['points'] and link['points']|float %}
 <hr>
+    {%- if is_professor() %}
+<form method="POST">
+    <fieldset>
+        <legend>
+            Grade
+        </legend>
+        <input type="number" name="grade" value="{{grade if grade != '-'}}"> / {{link['points']}} <input type="text" name="comment" value="{{comment if comment}}">
+    </fieldset>
+    <input type="submit" value="SAVE" id="form_save" disabled>
+</form>
+    {%- else %}
 <div>
     Grade: {{grade}}/{{link['points']}}
 </div>
-{%- if comment %}
+        {%- if comment %}
 <div>
     Comment: {{comment}}
 </div>
-{%- endif %}
+        {%- endif %}
+    {%- endif %}
 {%- endif %}
 {% endblock %}

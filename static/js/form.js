@@ -1,7 +1,7 @@
 function setup_form()
 {
     //changing any input initiates the unsaved changes dialog
-    query('input, select').forEach(elem => {
+    query('input, select, textarea').forEach(elem => {
         on(elem, 'change', () => {
             query('#form_save').forEach(elem => {
                 elem.disabled = false;
