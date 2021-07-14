@@ -34,7 +34,7 @@
     {{link['name']}}
 </h2>
 {{display(link)}}
-{%- if link['submittable'] or (link['points'] and link['points']|float) %}
+{%- if view_submissions %}
 <hr>
     {%- if is_professor() %}
 <form method="POST">
@@ -51,7 +51,7 @@
                 {{student['id']}}
             {%- endif %}
             {%- if link['points'] and link['points']|float -%}
-                : <input type="number" name="grade-{{student['id']}}" value="{{student['grade'] if student['grade'] is not none}}"> / {{link['points']}} <input type="text" name="comment-{{student['id']}}" value="{{student['comment'] if student['comment'] is not none}}">
+                : <input type="number" name="grade-{{student['id']}}" value="{{student['grade'] if student['grade'] != '-'}}" step="any"> / {{link['points']}} <input type="text" name="comment-{{student['id']}}" value="{{student['comment'] if student['comment'] is not none}}">
             {%- endif %}
             </li>
         {%- endfor %}
@@ -62,15 +62,19 @@
     {%- else %}
         {%- if link['points'] and link['points']|float %}
 <div>
-    Grade: {{grade}}/{{link['points']}}
+    Grade: {{students[0]['grade']}}/{{link['points']}}
 </div>
-            {%- if comment %}
+            {%- if students[0]['comment'] %}
 <div>
-    Comment: {{comment}}
+    Comment: {{students[0]['comment']}}
 </div>
             {%- endif %}
         {%- endif %}
-        {%- if link['submittable'] %}
+        {% if students[0]['submission'] %}
+<div>
+    <a href="{{url_for('submission_page', class_id=class_['id'], link_id=link['id'], submission_id=students[0]['submission']['id'])}}">View submission</a>
+</div>
+        {%- elif link['submittable'] %}
 <div>
     <a href="{{url_for('upload_submission', class_id=class_['id'], link_id=link['id'])}}">Submit</a>
 </div>

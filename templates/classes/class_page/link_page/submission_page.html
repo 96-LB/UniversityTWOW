@@ -20,7 +20,7 @@
         <legend>
             Grade
         </legend>
-        <input type="number" name="grade" value="{{grade if grade != '-'}}"> / {{link['points']}} <input type="text" name="comment" value="{{comment if comment}}">
+        <input type="number" name="grade" value="{{grade if grade != '-'}}" step="any"> / {{link['points']}} <input type="text" name="comment" value="{{comment if comment}}">
     </fieldset>
     <input type="submit" value="SAVE" id="form_save" disabled>
 </form>

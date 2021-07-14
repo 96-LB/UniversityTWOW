@@ -420,17 +420,36 @@ def link_page_get(*, class_, link):
     except:
         points = 0
 
-    #professors get a list of students and their submissions and grades
-    if is_professor() and (points or link.get('submittable')):
-        for student in data.get('students', user=class_['id']):
-            students.append({
+    #whether the link is submittable, gradeable, or a viewable submission exists
+    view_submissions = (
+        points or
+        link.get('submittable') or
+        bool(submissions if is_professor() else submissions.get(data.get_id()))
+    )
+
+    #adds a student to the student list
+    def append_student(student):
+        #verifies that the grade is a float
+        try:
+            grade = grades.get(student)
+            float(grade)
+        except:
+            grade = '-'
+        students.append({
                 'id': student,
                 'submission': submissions.get(student),
-                'grade': grades.get(student),
+                'grade': grade,
                 'comment': comments.get(student)
             })
+
+    #professors get a list of students and their submissions and grades; students get their own
+    if is_professor():
+        for student in data.get('students', user=class_['id']):
+            append_student(student)
+    else:
+        append_student(data.get_id())
     
-    return render_template('classes/class_page/link_page.html', class_=class_, link=link, grade=grade, comment=comment, students=students)
+    return render_template('classes/class_page/link_page.html', class_=class_, link=link, view_submissions=view_submissions, students=students)
 
 @must_teach_class
 def link_page_post(*, class_, link):
@@ -565,7 +584,6 @@ def upload_submission_post(*, class_, link):
 @requires_valid_class
 @requires_class_member
 @requires_valid_link
-@requires_submittable_link
 @requires_valid_submission
 @must_teach_or_own_submission
 def submission_page(*, class_, link, submission):
@@ -579,15 +597,12 @@ def submission_page_get(*, class_, link, submission):
     grades = link.get('grades', {})
     comments = link.get('comments', {})
 
-    #try to parse grade into a number
-    grade = grades.get(submission['id'])
+    #verifies that the grade is a float
     try:
-        grade = int(grade)
+        grade = grades.get(submission['id'])
+        float(grade)
     except:
-        try:
-            grade = float(grade)
-        except:
-            grade = '-'
+        grade = '-'
     comment = comments.get(submission['id'])
 
     return render_template('classes/class_page/link_page/submission_page.html', class_=class_, link=link, submission=submission, grade=grade, comment=comment)
