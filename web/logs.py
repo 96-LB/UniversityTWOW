@@ -40,7 +40,5 @@ def get_logs():
             value.append(f'{timestamp} :: {user} visited {path} ({method})')
         
         obj[key[len(PREFIX):]] = value
-        
-        data.set('logs', logs, user=key)
 
     return obj

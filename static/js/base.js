@@ -15,8 +15,10 @@ function load(func)
     return on(window, 'load', func)
 }
 
-function query(selector)
+function query(selector, first=false)
 {
-    //selects all elements that fit the css selector
-    return [...document.querySelectorAll(selector)];
+    //selects elements that fit the css selector
+    return first ?
+        document.querySelector(selector) :
+        [...document.querySelectorAll(selector)];
 }

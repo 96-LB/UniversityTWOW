@@ -3,13 +3,7 @@ function setup_form()
     //changing any input initiates the unsaved changes dialog
     query('input, select, textarea').forEach(elem => {
         on(elem, 'change', () => {
-            query('#form_save').forEach(elem => {
-                elem.disabled = false;
-            })
-            window.onbeforeunload = event => {
-                event.preventDefault()
-                return event.returnValue = "Are you sure you want to exit?";
-            };
+            unsave();
         });
     });
 
@@ -19,6 +13,19 @@ function setup_form()
             window.onbeforeunload = null;
         });
     });
+}
+
+function unsave()
+{
+    let save_elem = query('#form_save', true);
+    if(save_elem)
+    {
+        save_elem.disabled = false;
+    }
+    window.onbeforeunload = event => {
+        event.preventDefault()
+        return event.returnValue = "Are you sure you want to exit?";
+    };
 }
 
 load(setup_form);

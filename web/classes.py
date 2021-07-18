@@ -207,6 +207,9 @@ def teaches_class(class_):
 def enrolled_in(class_):
     return discord.authorized and class_['id'] in data.get('classes')
 
+def is_in_purgatory():
+    return data.get('purgatory').get('count', 0) > 0
+
 ### decorators ###
 
 def requires_valid_class(f):
@@ -282,10 +285,13 @@ def requires_participant(f):
     return decorator
 
 def requires_class_member(f):
+    #sends purgatory members to purgatory if this class is ARG404
     #checks whether a student is enrolled in or a professor is teaching a class
     @wraps(f)
     @requires_participant
     def decorator(*args, class_, **kwargs):
+        if class_['id'] == 'ARG404' and is_in_purgatory():
+            return redirect(url_for('purgatory'))
         return (
             f(*args, class_=class_, **kwargs)
             if enrolled_in(class_) else
@@ -402,17 +408,6 @@ def link_page_get(*, class_, link):
     grades = link.get('grades', {})
     comments = link.get('comments', {})
     submissions = link.get('submissions', {})
-
-    #try to parse grade into a number
-    grade = grades.get(data.get_id())
-    try:
-        grade = int(grade)
-    except:
-        try:
-            grade = float(grade)
-        except:
-            grade = '-'
-    comment = comments.get(data.get_id())
 
     #check if the link is gradeable
     try:

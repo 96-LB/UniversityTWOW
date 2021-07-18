@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block css %}form.css{% endblock %}
+{% block js %}form.js|voting.js{% endblock %}
+{% block body %}
+<form method="POST">
+    <fieldset>
+        <legend>
+            Voting
+        </legend>
+        <div>
+            Remaining characters: 
+            <span id="voting_characters" data-max={{characters}}>
+                {{characters}}
+            </span>
+        </div>
+        <ul>
+            {%- for response in responses %}
+            <li>
+                <button type="button" data-letter="{{response['letter']}}">↑</button>
+                <button type="button" data-letter="{{response['letter']}}">↓</button>
+                <input type="hidden" name="letter" value="{{response['letter']}}">
+                <input type="text" name="name" value="{{response['name']}}" data-letter="{{response['letter']}}">
+                {{response['response']}}
+            </li>
+            {%- endfor %}
+        </ul>
+    </fieldset>
+    <input type="submit" value="SAVE" id="form_save" disabled>
+</form>
+{% endblock %}
