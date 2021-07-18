@@ -44,6 +44,7 @@ def voting():
     }[request.method]()
 
 def voting_get():
+    #reads prior vote data to fill in the voting screen
     vote_data = data.get('vote')
     vote = vote_data.get('vote', [])
     vote_letters = [response['letter'] for response in vote]
@@ -53,17 +54,24 @@ def voting_get():
         'name': ''
     } for letter, response in response_list.items() if letter not in vote_letters]
     characters = character_counts.get(data.get_id(), 100)
+
     return render_template('voting.html', responses=responses, characters=characters)
 
 def voting_post():
+    #initializes and grabs the submitted vote
     fields = request.form.to_dict(False)
+    characters = character_counts.get(data.get_id(), 100)
+    vote = []
+
+    #iterates over the list of response orderings and names
     letters = fields.get('letter', [])
     names = fields.get('name', [])
-    vote = []
-    characters = character_counts.get(data.get_id(), 100)
     for i in range(min(len(letters), len(names))):
+        #the name is truncated if they run out of characters
         letter = letters[i]
         name = names[i][:characters]
+
+        #builds a response object and subtracts the characters
         if letter in response_list:
             vote.append({
                 'letter': letter,
@@ -71,10 +79,13 @@ def voting_post():
                 'name': name
             })
             characters -= len(name)
+
+    #updates the database
     data.set('vote', {
         'characters': characters,
         'vote': vote
     })
+    
     return redirect(url_for('voting'), 303)
 
 ###
