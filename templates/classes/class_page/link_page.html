@@ -16,6 +16,10 @@
     <iframe src="{{material['link']}}" width=1024 height=576></iframe>
     {%- elif material['type'] == 'image' %}
     <img src="{{material['link']}}" alt="{{material['link']}}">
+    {%- elif material['type'] == 'video' %}
+    <video controls>
+        <source src="{{material['link']}}" type="video/mp4">
+    </video>
     {%- elif material['type'] == 'container' and material['link'] %}
     {{expand(material['link'])}}
     {%- elif material['type'] == 'container' %}

@@ -13,7 +13,7 @@
     {%- filter indent(width=8) %}
 {{multiline('text', required=False)}}
 {{text('link', required=False)}}
-{{select('type', {'empty': 'No Link', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'})}}
+{{select('type', {'empty': 'No Link', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'video': 'Embedded Video', 'link': 'Raw Link'})}}
     {%- endfilter %}
     </fieldset>
     <input type="submit" value="UPLOAD" id="form_save">

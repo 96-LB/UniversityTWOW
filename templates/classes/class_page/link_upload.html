@@ -61,7 +61,7 @@
 {{text('name', link['name'] or '')}}
 {{multiline('text', link['text'] or '', required=False)}}
 {{text('link', link['link'] or '', required=False)}}
-{{select('type', {'empty': 'No Link', 'container': 'Empty Container', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'link': 'Raw Link'}, link['type'] or '')}}
+{{select('type', {'empty': 'No Link', 'container': 'Empty Container', 'embed': 'Embedded Document', 'image': 'Embedded Image', 'video': 'Embedded Video', 'link': 'Raw Link'}, link['type'] or '')}}
 {{checkbox('submittable', link['submittable'], required=False)}}
 {{number('points', link['points'] or 0)}}
 {{select('container', containers, link['container'] or '', required=False)}}

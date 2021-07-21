@@ -10,6 +10,7 @@ flask-discord = "^0.1.64"
 flask = "^2.0.1"
 replit = "^3.1.0"
 discord = "^1.7.3"
+oauthlib = "^3.1.1"
 
 [tool.poetry.dev-dependencies]
 

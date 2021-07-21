@@ -1,4 +1,5 @@
 import json
+import core.data as data
 from core.web import app
 from web.permissions import requires_admin
 from web.logs import PREFIX
@@ -24,3 +25,12 @@ def database(filter_type):
         if filter_func(key):
             obj[key] = json.loads(db[key])
     return obj
+
+@app.route('/database/delete/<string:key>')
+@requires_admin
+def database_delete(key):
+    #removes an entry from the database
+    out = {key: data.get(key)}
+    del db[key]
+    data.set(key, {})
+    return out

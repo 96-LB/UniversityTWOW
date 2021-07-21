@@ -35,6 +35,8 @@ def requires_application_in_progress(f):
     def decorator(*args, **kwargs):
         if not is_admin():
             return redirect(url_for('application'), 303)
+        else:
+            return f(*args, **kwargs)
     return decorator
 
 def requires_accepted(f):
