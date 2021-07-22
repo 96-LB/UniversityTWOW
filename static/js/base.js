@@ -1,3 +1,5 @@
+'use strict';
+
 function on(elem, event, func)
 {
     //attaches an event listener to the provided element

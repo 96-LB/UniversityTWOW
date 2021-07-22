@@ -1,3 +1,5 @@
+'use strict';
+
 function setup_voting()
 {
     //update the character info
@@ -41,7 +43,7 @@ function setup_voting()
 
 function update()
 {
-    characters_elem = query('#voting_characters', true);
+    let characters_elem = query('#voting_characters', true);
     characters_elem.innerText = characters_elem.dataset.max - query('input[type=text]')
         .map(elem => elem.value.length)
         .reduce((a, b) => a + b);

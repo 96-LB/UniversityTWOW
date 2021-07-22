@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+{% if text %}
+<div>
+    {{text}}
+</div>
+{% endif %}
+<div>
+    <i>You cannot access this page temporarily. Time remaining: {{"%.0f" % (remaining // 3600)}}h {{"%.0f" % (remaining % 3600 // 60)}}m {{"%.0f" % (remaining % 60 // 1)}}s</i>
+</div>
+{% endblock %}

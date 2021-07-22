@@ -1,3 +1,5 @@
+'use strict';
+
 function setup_form()
 {
     //changing any input initiates the unsaved changes dialog
