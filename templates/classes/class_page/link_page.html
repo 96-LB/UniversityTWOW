@@ -11,7 +11,7 @@
 <hr>
 <div>
     {%- if material['type'] == 'link' %}
-    <a href="{{material['link']}}">{{material['link']}}</a>
+    <a href="{{material['link']}}" target="_blank">{{material['link']}}</a>
     {%- elif material['type'] == 'embed' %}
     <iframe src="{{material['link']}}" width=1024 height=576></iframe>
     {%- elif material['type'] == 'image' %}

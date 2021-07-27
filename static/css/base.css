@@ -26,6 +26,25 @@ table, th, tr, td {
     color: #FFFFFF;
 }
 
+.back {
+    position: relative;
+    z-index: -96;
+}
+
+.front {
+    position: relative;
+    z-index: 96;
+}
+
+.nopacity {
+    opacity: 0;
+}
+
 .tooltip {
     text-decoration: underline dotted var(--main) 1.5px;
+}
+
+.zero {
+    width: 0px;
+    height: 0px;
 }
