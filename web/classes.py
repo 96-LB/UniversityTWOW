@@ -155,6 +155,15 @@ class_list = {
         'ta': professor_list['236257776421175296']['id'],
         'description': '&nbsp;'
     },
+    'GEO013': {
+        'id': 'GEO013',
+        'title': 'Surveying Intermediate Geographical Nuisances: Amateur Litany',
+        'department': department_list['Sociology']['name'],
+        'professor': professor_list['210285266814894081']['id'],
+        'professor_name': professor_list['210285266814894081']['name'],
+        'ta': professor_list['212983348325384200']['id'],
+        'description': 'An introductory examination of abnormalities in border disputes as a result of political disagreements.<br><br><b>I think saying that, historically, I\'m subpar ontologically, necessitates excessive backlash. I\'m surely, certainly unrivalled in teaching.</b>'
+    },
     'ART121': {
         'id': 'ART121',
         'title': 'The Art of Art',
