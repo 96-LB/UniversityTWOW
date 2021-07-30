@@ -7,7 +7,6 @@ from flask_discord import requires_authorization
 from core.web import app, discord
 from functools import wraps
 from web.permissions import is_admin, requires_admin
-from replit import db
 
 def is_page(page):
     try:
@@ -95,11 +94,12 @@ def application_page(*, page):
     }[request.method](page=page)
 
 def application_page_get(*, page):
-    return render_template(f'application/{page}.html', data=data.get(f'page{page}'))
+    return render_template(f'application/{page}.html', data=data.get(f'page{page}'), count=5)
 
 def application_page_post(*, page):
     #stores the user's responses to the form, excluding the next field
     fields = request.form.to_dict(False)
+    next_ = None
     if 'next' in fields:
         next_ = fields.pop('next')[0]
     data.set(f'page{page}', fields)
@@ -154,7 +154,7 @@ def decision():
 @requires_admin
 def accept():
     students = []
-    for user in db.keys():
+    for user in data.keys():
         #checks if each user has a submitted application
         app = data.get('application', user=user)
         if app.get('submitted'):

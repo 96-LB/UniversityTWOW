@@ -286,11 +286,8 @@ def requires_participant(f):
     @wraps(f)
     @requires_authorization
     def decorator(*args, **kwargs):
-        return (
-            f(*args, **kwargs)
-            if is_professor()
-            else requires_accepted(f)(*args, **kwargs)
-        )
+        func = f if is_professor() else requires_accepted(f)
+        return func(*args, **kwargs)
     return decorator
 
 def requires_class_member(f):
@@ -301,11 +298,8 @@ def requires_class_member(f):
     def decorator(*args, class_, **kwargs):
         if class_['id'] == 'ARG404' and is_in_purgatory():
             return redirect(url_for('purgatory'))
-        return (
-            f(*args, class_=class_, **kwargs)
-            if enrolled_in(class_) else
-            must_teach_class(f)(*args, class_=class_, **kwargs)
-        )
+        func = f if enrolled_in(class_) else must_teach_class(f)
+        return func(*args, class_=class_, **kwargs)
     return decorator
 
 def must_teach_class(f):
@@ -323,11 +317,8 @@ def must_teach_or_own_submission(f):
     @wraps(f)
     @requires_participant
     def decorator(*args, class_, link, submission, **kwargs):
-        return (
-                f(*args, class_=class_, link=link, submission=submission, **kwargs)
-                if data.get_id() == submission.get('id')
-                else must_teach_class(f)(*args, class_=class_, link=link, submission=submission, **kwargs)
-        )
+        func = f if data.get_id() == submission.get('id') else must_teach_class(f)
+        return func(*args, class_=class_, link=link, submission=submission, **kwargs)
     return decorator
 
 

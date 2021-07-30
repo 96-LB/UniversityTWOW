@@ -3,7 +3,6 @@ from core.web import app, discord
 from web.permissions import requires_admin
 from datetime import date, datetime
 from flask import request
-from replit import db
 from time import time
 
 PREFIX = '~zzz~logs-'
@@ -25,7 +24,7 @@ def log_request():
 def get_logs():
     #gets the log entries from the database
     obj = {}
-    keys = [key for key in db.keys() if key.startswith(PREFIX)]
+    keys = [key for key in data.keys() if key.startswith(PREFIX)]
     keys.sort()
 
     #iterates over all the dates to build a json object

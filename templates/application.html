@@ -6,7 +6,7 @@
 <div>
     Thank you for applying to UniversityTWOW. If you need to edit your application or submit additional materials, please contact the Admissions Office.
 </div>
-{%- if accepted %}
+    {%- if accepted %}
 <h3>
     Status Update
 </h3>
@@ -16,7 +16,7 @@
 <div>
     Please click <a href="{{url_for('are_you_sure')}}" onclick="return confirm('You are about to be redirected to view your admissions decision. Before you proceed, make sure to be ready to receive your verdict. There are no \'are you sure that you are ready?\' screens.')">here</a> to view it.
 </div>
-{%- endif %}
+    {%- endif %}
 {%- else %}
 <div>
     Applications to UniversityTWOW's Class of 2021 are now closed. Thank you for your interest.
@@ -28,7 +28,8 @@
 <form method="POST">
     <input type="submit" value="Start a new application">
 </form>
-{%- elif finished %}
+{%- else %}
+    {%- if finished %}
 <div>
     Are you ready to submit your first-year application to UniversityTWOW's class of 2021?
 </div>
@@ -63,13 +64,11 @@
        <input type="submit">
     </fieldset>
 </form>
-<div>
-    Click <a href="/application/{{next_page}}">here</a> to resume editing your application.
-</div>
-{%- else %}
+    {%- else %}
 <div>
     Your first-year application is incomplete.
 </div>
+    {%- endif %}
 <div>
     Click <a href="/application/{{next_page}}">here</a> to resume editing your application.
 </div>

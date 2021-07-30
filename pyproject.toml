@@ -1,16 +1,16 @@
 [tool.poetry]
-name = "repl_python3_UniversityTWOW"
+name = "UniversityTWOW"
 version = "0.1.0"
 description = ""
-authors = ["LucasLaBuff <<>>"]
+authors = ["LucasLaBuff <<lucasbeef00@gmail.com>>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 flask-discord = "^0.1.64"
 flask = "^2.0.1"
 replit = "^3.1.0"
-discord = "^1.7.3"
 oauthlib = "^3.1.1"
+"discord.py" = "^1.7.3"
 
 [tool.poetry.dev-dependencies]
 

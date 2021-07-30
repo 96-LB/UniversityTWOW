@@ -102,7 +102,7 @@ def voting_log():
 def voting_log_get():
     #gets the log entries from the database
     obj = {}
-    logs = json.loads(db['~zzz~logs-voting'])
+    logs = db.get('~zzz~logs-voting')
 
     #iterates over all the ids to build a json object
     for key in logs:

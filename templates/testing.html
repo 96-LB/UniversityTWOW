@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+<div>
+    Welcome to the UniversityTWOW Secure Testing Portal (USTP). Please follow the directions below to complete your secure examination.
+</div>
+<hr>
+<p>
+    {{test['text']|default('No description has been provided for this test.')}}
+</p>
+{%- if test_data['submitted'] %}
+<p>
+    You have completed this examination.
+</p>
+{%- elif 'deadline' in test and test['deadline'] < time %}
+<p>
+    The deadline for this examination has passed.
+</p>
+{%- elif not test_data['started'] %}
+<p>
+    Answer each question to the best of your ability. When you are confident in your answers, press the ► button to continue. You may edit your answers while you remain on the page, but once you advance, you cannot return to previous pages. Utilize the save button to store your answers without submitting them. Be sure to do this frequently to avoid loss of work. If you exit the secure testing webpage, you may resume at any time, as long as the timer has not expired. Personal timers cannot be paused, will continue to run even when the user is not present. You may only attempt this examination once.
+</p>
+    {%- if 'time_limit' in test %}
+<p>
+    You will have {{format_time(test['time_limit'])}} to submit your work. It is highly advised that you set up a timer, as there will be no dynamic clock and no reminders. Your indicator of time is a static display which updates upon page load. Please be sure to save frequently. If time runs out, your saved answers will be automatically submitted, but unsaved answers will be lost. 
+</p>
+    {%- endif %}
+    {%- if 'deadline' in test %}
+<p>
+    The deadline to complete this examination is in {{format_time(test['deadline'] - time)}}. All work must be submitted by this time, even if you begin late enough such that your personal timer has time remaining. It is highly advised that you set up an alarm, as there will be no dynamic clock and no reminders. Your indicator of time is a static display which updates upon page load. Please be sure to save frequently. If time runs out, your saved answers will be automatically submitted, but unsaved answers will be lost.
+</p>
+    {%- endif %}
+<form method="POST">
+    <input type="submit" value="Begin your examination">
+</form>
+{%- else %}
+<div>
+    Your examination is incomplete.{% if 'time' in test_data %} You have {{format_time(test_data['time'] - time)}} remaining to submit your work.{% endif %}
+</div>
+<div>
+    Click <a href="{{url_for('test_page', class_id=test['class']['id'], test_id=test['id'], page=test_data['next_page'])}}">here</a> to resume your examination.
+</div>
+{%- endif %}
+{% endblock %}

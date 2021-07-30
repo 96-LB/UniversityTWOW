@@ -8,6 +8,6 @@
 </div>
 {% endif %}
 <div>
-    <i>You cannot access this page temporarily. Time remaining: {{"%.0f" % (remaining // 3600)}}h {{"%.0f" % (remaining % 3600 // 60)}}m {{"%.0f" % (remaining % 60 // 1)}}s</i>
+    <i>You cannot access this page temporarily. Time remaining: {{format_time(remaining)}}</i>
 </div>
 {% endblock %}
