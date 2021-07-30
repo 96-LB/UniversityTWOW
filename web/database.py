@@ -1,4 +1,3 @@
-import json
 import core.data as data
 from core.web import app
 from web.permissions import requires_admin
@@ -23,14 +22,21 @@ def database(filter_type):
     obj = {}
     for key in db:
         if filter_func(key):
-            obj[key] = json.loads(db[key])
+                obj[key] = db.get(key)
     return obj
 
-@app.route('/database/delete/<string:key>')
+@app.route('/database/delete/<string:user>')
 @requires_admin
-def database_delete(key):
+def database_delete(user):
     #removes an entry from the database
-    out = {key: data.get(key)}
-    del db[key]
-    data.set(key, {})
+    out = {user: db.get(user)}
+    data.delete(user=user)
+    return out
+
+@app.route('/database/delete/<string:user>/<string:key>')
+@requires_admin
+def database_delete_key(user, key):
+    #clears a key from an entry in the database
+    out = {user: db.get(user), key: data.get(key, user=user)}
+    data.set(key, {}, user=user)
     return out
