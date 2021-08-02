@@ -1,0 +1,33 @@
+{% extends 'form.html' %}
+{% block name %}Introductory Survey{% endblock %}
+{% block form %}
+<div>
+    How many introductory surveys were submitted? <i>(1 point, continuous)</i>
+    {{number('count', min=0)}}
+</div>
+
+<div>
+    What percentage of introductory surveys contained the word 'European'? <i>(1 point, continuous)</i>
+    {{number('european', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What percentage of students picked '7' as one of their random numbers on the introductory survey? <i>(1 point, continuous)</i>
+    {{number('seven', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What percentage of students chose a larger random number the second time they were asked on the introductory survey? <i>(1 point, continuous)</i>
+    {{number('second', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What was the average response to question #8? <i>(1 point, continuous)</i>
+    {{number('eight', min=1, max=10, step='any')}}
+</div>
+
+<div>
+    What percentage of introductory surveys were submitted without a name? <i>(1 point, continuous)</i>
+    {{number('nameless', min=0, max=100, step='any')}}
+</div>
+{% endblock %}

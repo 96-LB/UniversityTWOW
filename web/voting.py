@@ -29,6 +29,8 @@ Gives you three other items at random.
 During voting, choose a response that doesn't belong to you. You earn a boost equal to that response's boost, minus 10%.
 Accumulate a stacking 2.5% boost for every round you and your target place within 20% of the leaderboard of each other. Receive a 20% penalty when you don't.
 Choose a contestant during responding. Their response will be encoded by cipher (Vigenère with key "UIRQEXCBHUSFOXWML").
+Maybe an item which added random words to the end of your response and gave 10% boost
+It alerts you if your response is currently sandblasted!
 '''.split('\n')[1:-1]
 
 response_list = {chr(ord('A') + i): response_list[i] for i in range(len(response_list))}
@@ -36,7 +38,7 @@ response_list = {chr(ord('A') + i): response_list[i] for i in range(len(response
 character_counts = json.loads(os.environ['VOTING_CHARACTERS'])
 
 @app.route('/voting', methods=['GET', 'POST'])
-@requires_admin
+@requires_authorization
 def voting():
     return {
         'GET': voting_get,
@@ -91,7 +93,7 @@ def voting_post():
 ###
 
 @app.route('/voting/logs', methods=['GET', 'POST'])
-@requires_admin
+@requires_authorization
 def voting_log():
     return {
         'GET': voting_log_get,

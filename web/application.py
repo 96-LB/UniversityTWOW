@@ -94,7 +94,7 @@ def application_page(*, page):
     }[request.method](page=page)
 
 def application_page_get(*, page):
-    return render_template(f'application/{page}.html', data=data.get(f'page{page}'), count=5)
+    return render_template(f'application/{page}.html', data=data.get(f'page{page}'), page=page, count=5)
 
 def application_page_post(*, page):
     #stores the user's responses to the form, excluding the next field

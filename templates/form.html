@@ -13,11 +13,13 @@
     <div> 
         <input type="submit" name="next" value="◄">
         <input type="submit" name="next" value="►">
-    {%- if count %}
+    {%- if page %}
         <i>
-            Page {% block page %}{% endblock %} of {{count}}
+            Page {{page}} of {{count}}
         </i>
-    {%- endif %}{{remaining|debug}}
+    {%- endif %}
+    </div>
+    <div>
     {%- if remaining %}
         <i>
             You have {{format_time(remaining)}} left to submit.

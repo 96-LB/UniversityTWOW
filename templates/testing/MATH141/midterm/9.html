@@ -1,0 +1,13 @@
+{% extends 'form.html' %}
+{% block name %}Bonus pt. 3{% endblock %}
+{% block form %}
+<div>
+    What percentage of students left the checkbox on the previous page unchecked to be defiant because it was worth no points? <i>(1 point, continuous)</i>
+    {{number('defiance', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    Check this box to get a point. <i>(1 point, discrete)</i>
+    {{checkbox('one', ['←'])}}
+</div>
+{% endblock %}

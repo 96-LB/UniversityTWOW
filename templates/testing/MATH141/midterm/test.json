@@ -1,5 +1,7 @@
 {
-    "text": "yo this is a description yoyoyoy",
-    "time_limit": 15,
-    "deadline": 1627689600
+    "text": "Welcome, students, to your midterm examination for MATH141. This rigorous test will determine your mastery of the topics which we have covered in class so far. However, do not fear! As requested, I will be curving this exam. How does that impact the scoring policy, you may ask? There will be two types of questions on this exam. For questions labeled as 'discrete', you will earn either the full point value or no point value, depending on whether you input the correct answer. On the other hand, questions marked as 'continuous' use a variable scale to assess your accuracy. Each student's deviation from the correct answer will be collected and used to build a bell curve upon which your answers will be scored. Student responses closest to the canonical answer will receive the most credit. At the conclusion of the test, all student point values will be summed and curved according to a normal distribution model. Good luck, and make sure to outperform your peers!",
+    "start": 1627689540,
+    "real-start": 1627689600,
+    "time_limit": 900,
+    "deadline": 1627775940
 }

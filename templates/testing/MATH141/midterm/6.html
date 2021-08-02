@@ -1,0 +1,28 @@
+{% extends 'form.html' %}
+{% block name %}UniversityTWOW Admissions{% endblock %}
+{% block form %}
+<div>
+    How many applications were rejected from UniversityTWOW? <i>(1 point, continuous)</i>
+    {{number('rejects', min=0)}}
+</div>
+
+<div>
+    Which page was filled out by the most applicants? <i>(1 point, discrete)</i>
+    {{select('page', [1, 2, 3, 4, 5])}}
+</div>
+
+<div>
+    What percentage of applications included the words 'something quirky' in the essay portion? <i>(1 point, continuous)</i>
+    {{number('quirky', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What percentage of applications included the words 'something quirky' in the essay portion, only counting those who filled out the final prompt? <i>(1 point, continuous)</i>
+    {{number('quirky2', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What percentage of applications were submitted late? <i>(1 point, continuous)</i>
+    {{number('late', min=0, max=100, step='any')}}
+</div>
+{% endblock %}

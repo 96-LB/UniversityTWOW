@@ -48,16 +48,14 @@ def get_time_limit(test):
     #gets the time limit deadline for completing a test
     try:
         return int(test['time_limit'] + time())
-    except Exception as e:
-        print(e)
+    except:
         return None
 
 def time_remaining(test):
     #the time remaining on the user's test
     try:
         return int(get_test_data(test)['time'] - time())
-    except Exception as e:
-        print(e)
+    except:
         return None
 
 ### checks ###
@@ -96,18 +94,11 @@ def start_test(test):
     #sets the user's deadline to the earliest of the hard deadline and the time limit
     deadline = test.get('deadline')
     time_limit = get_time_limit(test)
-    print(deadline)
-    print(time_limit)
     if deadline is None:
         deadline = time_limit
     elif time_limit is not None:
         deadline = min(deadline, time_limit)
     
-    print({
-        'started': True,
-        'next_page': 1,
-        'time': deadline
-    })
     #starts the user's test
     return set_test_data(test, {
         'started': True,
@@ -154,11 +145,11 @@ def requires_test_in_progress(f):
     @wraps(f)
     @requires_authorization
     def decorator(*args, test, **kwargs):
-        if (not started_test(test) or submitted_test(test)): # TODO: and not is_admin():
+        if (not started_test(test) or submitted_test(test)) and not is_admin():
             return redirect(url_for('test_main', class_id=test['class']['id'], test_id=test['id']), 303)
         else:
             #if there is no time left, submit the test before proceeding
-            if time_remaining(test) < 0:
+            if time_remaining(test) and time_remaining(test) < 0:
                 submit_test(test)
             return f(*args, test=test, **kwargs)
     return decorator
@@ -170,7 +161,7 @@ def must_be_next_page(f):
     @wraps(f)
     @requires_authorization
     def decorator(*args, test, page, **kwargs):
-        if get_test_data(test).get('next_page') != page: # TODO: and not is_admin():
+        if get_test_data(test).get('next_page') != page and not is_admin():
             return redirect(url_for('test_main', class_id=test['class']['id'], test_id=test['id']), 303)
         else:
             return f(*args, test=test, page=page, **kwargs)
@@ -215,11 +206,12 @@ def test_page(*, test, page):
 def test_page_get(*, test, page):
     class_id = test['class']['id']
     test_id = test['id']
-    return render_template(f'testing/{class_id}/{test_id}/{page}.html', data=get_page_data(test, page), test_data=get_test_data(test), count=count_pages(test), remaining=time_remaining(test))
+    return render_template(f'testing/{class_id}/{test_id}/{page}.html', data=get_page_data(test, page), test_data=get_test_data(test), page=page, count=count_pages(test), remaining=time_remaining(test))
 
 def test_page_post(*, test, page):
     #stores the user's responses to the form, excluding the next field
     fields = request.form.to_dict(False)
+    print(fields)
     next_ = None
     if 'next' in fields:
         next_ = fields.pop('next')[0]

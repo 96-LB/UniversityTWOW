@@ -1,0 +1,8 @@
+{% extends 'form.html' %}
+{% block name %}Class Information (Reflection pt. 2){% endblock %}
+{% block form %}
+<div>
+    Did you lie on the previous problem? <i>(3 points, discrete)</i>
+    {{checkbox('lie', ['I lied on the previous problem.'])}}
+</div>
+{% endblock %}

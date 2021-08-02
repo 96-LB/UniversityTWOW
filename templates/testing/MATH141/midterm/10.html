@@ -1,0 +1,18 @@
+{% extends 'form.html' %}
+{% block name %}Bonus pt. 4{% endblock %}
+{% block form %}
+<div>
+    What percentage of students left the checkbox on the previous page unchecked to be defiant because they're stupid? <i>(1 point, continuous)</i>
+    {{number('stupidity', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    Enter your social security number for free points (not a scam). <i>(5 points, discrete)</i>
+    {{text('ssn')}}
+</div>
+
+<div>
+    As a token of reward for completing the last page, you have been granted three points. <i>(3 points, discrete)</i>
+    {{select('reward', ['Claim reward.'])}}
+</div>
+{% endblock %}

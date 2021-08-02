@@ -1,0 +1,23 @@
+{% extends 'form.html' %}
+{% block name %}Bonus{% endblock %}
+{% block form %}
+<div>
+    The answer to this question is the mean of all responses to it. <i>(1 point, continuous)</i>
+    {{number('mean', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    The answer to this question is the mean of all responses to it. <i>(-1 point, continuous)</i>
+    {{number('-mean', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    The answer to this question is the circular mean of all responses to it. <i>(1 point, continuous)</i>
+    {{number('circular', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    The answer to this question is the mean of all responses to the first problem on this page. <i>(1 point, continuous)</i>
+    {{number('mean1', min=0, max=100, step='any')}}
+</div>
+{% endblock %}

@@ -1,37 +1,8 @@
 {% extends 'form.html' %}
-{% block page %}3{% endblock %}
-{% block name %}Honors{% endblock %}
+{% block name %}Class Information (Reflection){% endblock %}
 {% block form %}
 <div>
-    Please list up to five honors which you have received:
+    Did you attempt to cheat on the previous problem by checking the syllabus? <i>(1 point, discrete)</i>
+    {{checkbox('cheat', ['I attempted to cheat.'])}}
 </div>
-{%- for i in range(5): %}
-
-<hr>
-
-<div>
-    Name:
-    {{text('name' ~ i, maxlength=50)}}
-</div>
-
-<div>
-    Organization:
-    {{text('org' ~ i, maxlength=50)}}
-</div>
-
-<div>
-    Description:
-    {{text('desc' ~ i, maxlength=100)}}
-</div>
-
-<div>
-    Year(s) awarded:
-    {{checkbox('year' ~ i, range(2016, 2022))}}
-</div>
-
-<div>
-    Level(s) of recognition:
-    {{checkbox('level' ~ i, ['Round', 'Season', 'TWOW', 'Community'])}}
-</div>
-{%- endfor %}
 {% endblock %}

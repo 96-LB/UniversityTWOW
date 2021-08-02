@@ -1,0 +1,23 @@
+{% extends 'form.html' %}
+{% block name %}Bonus pt. 2{% endblock %}
+{% block form %}
+<div>
+    What percentage of students submitted the same answer to the first and last problem on the previous page? <i>(1 point, continuous)</i>
+    {{number('same', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What's the average of all percentage responses you've given on this examination? <i>(1 point, continuous)</i>
+    {{number('all_avg', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What's the standard deviation of all percentage responses you've given on this examination? <i>(1 point, continuous)</i>
+    {{number('all_stdev', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    Is your answer to the previous problem at least 0 (inclusive)? <i>(0 points, discrete)</i>
+    {{checkbox('zero', ['Yes.'])}}
+</div>
+{% endblock %}

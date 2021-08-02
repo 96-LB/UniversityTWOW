@@ -1,41 +1,23 @@
 {% extends 'form.html' %}
-{% block page %}2{% endblock %}
-{% block name %}Education{% endblock %}
+{% block name %}Class Information{% endblock %}
 {% block form %}
 <div>
-    Please list up to five TWOWs in which you have participated:
-</div>
-{%- for i in range(5): %}
-
-<hr>
-
-<div>
-    Name:
-    {{text('name' ~ i)}}
+    What percentage of initial UniversityTWOW students registered for MATH141? <i>(1 point, continuous)</i>
+    {{number('register', min=0, max=100, step='any')}}
 </div>
 
 <div>
-    Date of entry:
-    {{month('entry' ~ i)}}
+    What's the average submission rate for MATH141 assignments? <i>(1 point, continuous)</i>
+    {{number('submission', min=0, max=100, step='any')}}
 </div>
 
 <div>
-    Date of graduation:
-    {{month('graduation' ~ i)}}
+    If you are caught up on your research project, checking this box earns you five points. Otherwise, it will result in a five-point deduction. <i>(5 points, discrete)</i>
+    {{checkbox('research', ['I am caught up on my research project.'])}}
 </div>
 
 <div>
-    Class rank:
-    {{number('rank' ~ i, min=1)}}
-    out of
-    {{number('size' ~ i, min=1)}}
+    What percentage of your final grade is this examination worth? <i>(1 point, continuous)</i>
+    {{number('midterm', min=0, max=100, step='any')}}
 </div>
-
-<div>
-    GPA:
-    {{number('gpa' ~ i, min=0, max=100, step=0.01)}}
-    %
-    {{indent(4, radio('weight' ~ i, ['Normalized', 'Standardized']))}}
-</div>
-{%- endfor %}
 {% endblock %}
