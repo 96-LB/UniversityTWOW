@@ -3,6 +3,8 @@ from flask import redirect, url_for, request
 from flask_discord import Unauthorized, AccessDenied
 from oauthlib import oauth2
 
+ERRORS = oauth2.rfc6749.errors
+
 @app.errorhandler(Unauthorized)
 def error_unauthorized(error):
     return redirect(url_for('login', next=request.path), 303)
@@ -22,6 +24,6 @@ def callback():
     next_page = url_for('index')
     try:
         next_page = discord.callback()['next']
-    except (AccessDenied, KeyError, oauth2.rfc6749.errors.MismatchingStateError):
+    except (AccessDenied, KeyError, ERRORS.MismatchingStateError, ERRORS.InvalidClientIdError):
         pass
     return redirect(next_page, 303)

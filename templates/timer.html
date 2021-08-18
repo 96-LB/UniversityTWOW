@@ -3,11 +3,11 @@
 {% block js %}{% endblock %}
 {% block body %}
 {% if text %}
-<div>
+<p>
     {{text}}
-</div>
+</p>
 {% endif %}
-<div>
+<p>
     <i>You cannot access this page temporarily. Time remaining: {{format_time(remaining)}}</i>
-</div>
+</p>
 {% endblock %}
