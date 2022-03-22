@@ -1,0 +1,28 @@
+{% extends 'form.html' %}
+{% block name %}Academic Dishonesty{% endblock %}
+{% block form %}
+<div>
+    What percentage of students who completed the midterm attempted to cheat by checking the syllabus? <i>(1 point, continuous)</i>
+    {{number('cheaters', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What percentage of students who completed the midterm admitted to cheating, whether or not they did so? <i>(1 point, continuous)</i>
+    {{number('admitters', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What percentage of students who completed the midterm admitted to lying about their admission of cheating, whether or not they did so? <i>(1 point, continuous)</i>
+    {{number('admitters-2', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    Assuming your previous answers to be correct, what is the minimum possible percentage of students who completed the midterm that lied on the question about cheating? <i>(2 points, discrete)</i>
+    {{number('minimum-liars', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    Assuming your previous answers to be correct, what is the maximum possible percentage of students who completed the midterm that lied on the question about lying about cheating? <i>(4 points, discrete)</i>
+    {{number('maximum-liars', min=0, max=100, step='any')}}
+</div>
+{% endblock %}

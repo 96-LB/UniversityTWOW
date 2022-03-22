@@ -1,0 +1,28 @@
+{% extends 'form.html' %}
+{% block name %}Examination Meta pt. 2{% endblock %}
+{% block form %}
+<div>
+    What was the average raw (pre-curve) score on the midterm examination? <i>(1 point, continuous)</i>
+    {{number('midterm-raw', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    How many submissions were there to the midterm? <i>(1 point, continuous)</i>
+    {{number('midterm-count', min=0)}}
+</div>
+
+<div>
+    What will be the average raw (pre-curve) score on this examination? <i>(1 point, continuous)</i>
+    {{number('final-raw', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    How many submissions will there be to this examination? <i>(1 point, continuous)</i>
+    {{number('final-count', min=0)}}
+</div>
+
+<div>
+    Assuming your previous answers to be correct, what will be the weighted mean of the average raw (pre-curve) scores on the examinations, where weight is determined by number of submissions? <i>(2 points, discrete)</i>
+    {{number('weighted-grade', min=0, max=100, step='any')}}
+</div>
+{% endblock %}

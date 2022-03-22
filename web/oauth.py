@@ -6,7 +6,10 @@ from oauthlib import oauth2
 ERRORS = oauth2.rfc6749.errors
 
 @app.errorhandler(Unauthorized)
+@app.errorhandler(ERRORS.TokenExpiredError)
+@app.errorhandler(ERRORS.InvalidGrantError)
 def error_unauthorized(error):
+    discord.revoke()
     return redirect(url_for('login', next=request.path), 303)
 
 @app.route('/login')

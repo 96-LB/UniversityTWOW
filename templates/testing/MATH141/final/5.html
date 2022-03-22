@@ -1,0 +1,18 @@
+{% extends 'form.html' %}
+{% block name %}Worksheets{% endblock %}
+{% block form %}
+<div>
+    What was your average grade on Worksheets 1–7? <i>(1 point, discrete)</i>
+    {{number('worksheets', min=0, max=10, step='any')}}
+</div>
+
+<div>
+    Using a linear regression model on your worksheet scores, what score are you predicted to receive on Worksheet 8? <i>(1 point, discrete)</i>
+    {{number('extrapolation', min=0)}}
+</div>
+
+<div>
+    Assuming your previous answers to be correct, what is the total percentage of your potential grade which you have lost from the worksheets? <i>(2 points, discrete)</i>
+    {{number('potential', min=0, max=100, step='any')}}
+</div>
+{% endblock %}

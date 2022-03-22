@@ -1,0 +1,33 @@
+{% extends 'form.html' %}
+{% block name %}Presentations{% endblock %}
+{% block form %}
+<div>
+    How many presentations were there? <i>(1 point, discrete)</i>
+    {{number('presentations', min=0)}}
+</div>
+
+<div>
+    How many new players have won a season of Doubled TWOW? <i>(1 point, discrete)</i>
+    {{number('newbies', min=0)}}
+</div>
+
+<div>
+    What is the coefficient of determination of the linear regression of score relative to characters used in responses with 150 or less characters? <i>(1 point, discrete)</i>
+    {{number('r2', min=0, max=1, step='any')}}
+</div>
+
+<div>
+    What is the optimal number of characters to use in order to maximize your score? <i>(1 point, discrete)</i>
+    {{number('characters', min=0, step='any')}}
+</div>
+
+<div>
+    What percentage of people who use no punctuation die in a TWOW? <i>(1 point, discrete)</i>
+    {{number('punctuation', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    Assuming your previous answers to be correct, what is the population standard deviation of the previous answers on this page (rounded to the nearest whole number)? <i>(2 points, discrete)</i>
+    {{number('stdev', min=0)}}
+</div>
+{% endblock %}

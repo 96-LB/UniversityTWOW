@@ -1,0 +1,22 @@
+{% extends 'form.html' %}
+{% block name %}Examination Meta{% endblock %}
+{% block form %}
+<div>
+    Note: Unless otherwise specified, express all percentages using the range 0% to 100%.
+</div>
+
+<div>
+    What was the average grade on the midterm examination? <i>(2 points, discrete)</i>
+    {{number('midterm-grade', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    What will be the average grade on this examination? <i>(2 points, discrete)</i>
+    {{number('final-grade', min=0, max=100, step='any')}}
+</div>
+
+<div>
+    Assuming your previous answers to be correct, what will be the mean of the average grades on the examinations? <i>(2 points, discrete)</i>
+    {{number('mean-grade', min=0, max=100, step='any')}}
+</div>
+{% endblock %}

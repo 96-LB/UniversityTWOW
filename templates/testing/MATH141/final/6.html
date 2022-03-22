@@ -1,0 +1,8 @@
+{% extends 'form.html' %}
+{% block name %}Participation{% endblock %}
+{% block form %}
+<div>
+    Please reread the grading section of the syllabus and note the portion regarding how participation affects your grade. On a scale of 0–20, give a fair and honest assessment of how many of your points should I deduct based on your participation in this class? (0 = most participation, 10 = least participation) <i>(0 points, continuous)</i>
+    {{number('participation', min=0, max=10, step='any')}}
+</div>
+{% endblock %}
