@@ -1,4 +1,12 @@
 **/__pycache__
 \!TODO
-secret*
 .breakpoints
+**/venv
+replit.nix
+.replit
+.vscode
+/data/
+*.egg-info
+node_modules
+
+secret*
