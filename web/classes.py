@@ -632,3 +632,60 @@ def submission_page_post(*, class_, link, submission):
         data.set('links', links, user=class_['id'])
 
     return redirect(url_for('submission_page', class_id=class_['id'], link_id=link['id'], submission_id=submission['id']), 303)
+
+###
+
+
+@app.route('/classes/<string:class_id>/grades', methods=['GET', 'POST'])
+@requires_valid_class
+@must_teach_class
+def grades_page(*, class_):  
+    return {
+        'GET': grades_page_get,
+        'POST': grades_page_post
+    }[request.method](class_=class_)
+
+def grades_page_get(*, class_,):
+    #reads information from the class data
+    grade_data = data.get('final_grades', user=class_['id'])
+    grades = grade_data.get('grades', {})
+    comments = grade_data.get('comments', {})
+
+    # builds the list of students
+    students = [{
+        'id': student,
+        'grade': grades.get(student),
+        'comment': comments.get(student),
+        'submission': None
+    } for student in data.get('students', user=class_['id'])]
+
+    # build a fake link so we can use the link_page template
+    link = {
+        'name': 'Grades',
+        'link': '',
+        'type': 'empty',
+        'points': 14,
+        'submittable': False
+    }
+    
+    return render_template('classes/class_page/link_page.html', class_=class_, link=link, view_submissions=True, students=students)
+
+def grades_page_post(*, class_):
+    grades = {}
+    comments = {}
+    
+    #splits the grades and comments
+    fields = request.form.to_dict()
+    for key, value in fields.items():
+        if key.startswith('grade-'):
+            grades[key[6:]] = value
+        elif key.startswith('comment-'):
+            comments[key[8:]] = value
+    
+    #updates the database
+    grade_data = data.get('final_grades', user=class_['id'])
+    grade_data['grades'] = grades
+    grade_data['comments'] = comments
+    data.set('final_grades', grade_data, user=class_['id'])
+
+    return redirect(url_for('grades_page', class_id=class_['id']), 303)
