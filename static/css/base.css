@@ -2,7 +2,7 @@
   --main: #4D6396; /* convert base-64 "TWOW" to hexadecimal */
 }
 
-table, th, tr, td {
+table, th, tr, td, pre {
     border: 1px solid black;
     border-collapse: collapse;
 }

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block css %}{% endblock %}
+{% block js %}{% endblock %}
+{% block body %}
+<div>
+    <a href="{{url_for('classes')}}">Return to your class list</a>
+</div>
+<hr>
+{%- if not grades %}
+<div>
+    No transcript is available at this time.
+</div>
+{%- else %}
+<div>
+    Below is your unofficial transcript. This is provided solely for convenience, and may not be used as an official document. If you would like to send a transcript to an academic institution, employer, or any other individual, please contact the Registrar's office to have it delivered on your behalf. Note: this will incur a small fee to your student billing account.
+</div>
+<pre>
+{% for class_, grade in grades.items() %}
+{{class_.ljust(10)}} {{grade[0].ljust(4)}} {{"“" + grade[1] + "”" if grade[1] else ""}}
+{%- endfor %}
+</pre>
+{%- endif %}
+{% endblock %}

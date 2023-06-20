@@ -635,7 +635,6 @@ def submission_page_post(*, class_, link, submission):
 
 ###
 
-
 @app.route('/classes/<string:class_id>/grades', methods=['GET', 'POST'])
 @requires_valid_class
 @must_teach_class
@@ -651,7 +650,7 @@ def grades_page_get(*, class_,):
     grades = grade_data.get('grades', {})
     comments = grade_data.get('comments', {})
 
-    # builds the list of students
+    #builds the list of students
     students = [{
         'id': student,
         'grade': grades.get(student),
@@ -659,7 +658,7 @@ def grades_page_get(*, class_,):
         'submission': None
     } for student in data.get('students', user=class_['id'])]
 
-    # build a fake link so we can use the link_page template
+    #build a fake link so we can use the link_page template
     link = {
         'name': 'Grades',
         'link': '',
@@ -689,3 +688,28 @@ def grades_page_post(*, class_):
     data.set('final_grades', grade_data, user=class_['id'])
 
     return redirect(url_for('grades_page', class_id=class_['id']), 303)
+
+###
+
+@app.route('/transcript')
+@requires_participant
+def transcript():
+    
+    def map_grade(grade):
+        #converts a numerical grade to a letter grade
+        try:
+            return ('F-', 'F', 'F+', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+')[int(grade)]
+        except:
+            return str(grade)
+    
+    #gets the list of enrolled classes
+    classes = sorted(data.get('classes'))
+    grade_data = {class_: data.get('final_grades', user=class_) for class_ in classes}
+    grades = {
+        class_: (
+            map_grade(grade_data[class_].get('grades', {}).get(data.get_id(), 'NA')),
+            grade_data[class_].get('comments', {}).get(data.get_id(), '')
+        ) for class_ in classes
+    }
+    
+    return render_template('transcript.html', grades=grades)
