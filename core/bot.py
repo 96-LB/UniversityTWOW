@@ -21,6 +21,7 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='https://universitytwow.cf'))
     print('Headmaster bot is running!')
 
+import bot.secret as _
 def run():
     #runs the bot in a separate thread
     thread = Thread(target=lambda: bot.run(os.environ['BOT_TOKEN']))

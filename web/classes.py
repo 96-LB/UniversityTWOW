@@ -693,6 +693,7 @@ def grades_page_post(*, class_):
 
 @app.route('/transcript')
 @requires_participant
+@requires_professor
 def transcript():
     
     def map_grade(grade):
