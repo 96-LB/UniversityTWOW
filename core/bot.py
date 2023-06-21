@@ -2,7 +2,11 @@ import discord, os, asyncio
 from threading import Thread
 from functools import wraps
 
-bot = discord.Client()
+intents = discord.Intents().default()
+intents.messages = True
+intents.message_content = True
+
+bot = discord.Client(intents=intents)
 
 guild = None
 loop = asyncio.get_event_loop()
