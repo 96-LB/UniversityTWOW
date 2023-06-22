@@ -18,14 +18,18 @@ def task(f):
         return loop.create_task(f(*args, **kwargs))
     return decorator
 
+import bot.secret as secret
+
 @bot.event
 async def on_ready():
     global guild
     guild = bot.get_guild(831515414022455336) # UniversityTWOW
+    
+    await secret.setup(bot)
     await bot.change_presence(activity=discord.Game(name='https://universitytwow.cf'))
+    
     print('Headmaster bot is running!')
 
-import bot.secret as _
 def run():
     #runs the bot in a separate thread
     thread = Thread(target=lambda: bot.run(os.environ['BOT_TOKEN']))
