@@ -21,7 +21,8 @@ _cache = {}
 def get_id(user=None):
     return str(
         user if user is not None else 
-        session.get('override', discord.fetch_user().id)
+        session.get('override') if session.get('override') is not None else
+        discord.fetch_user().id
     )
 
 def _load(user=None):
