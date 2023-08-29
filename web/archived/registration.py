@@ -32,11 +32,11 @@ def update():
     classes = {class_id: [] for class_id in class_list}
     students = {}
     for user in db.keys():
-        #checks if each user is accepted and has registred for classes
+        #checks if each user is accepted and has registered for classes
         app = data.get('application', user=user)
         registration = data.get('classes', user=user)
         if app.get('accepted') and registration:
-            #adds roles and updates the class list of studnts
+            #adds roles and updates the class list of students
             roles.add_roles(*registration, user=user, reason='registered for class')
             for class_id in registration:
                 classes[class_id].append(user)
