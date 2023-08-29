@@ -10,13 +10,13 @@ intents.members = True
 bot = discord.Client(intents=intents)
 
 guild = None
-loop = asyncio.get_event_loop()
 
 def task(f):
     #turns an asynchronous coroutine function into a task
     @wraps(f)
     def decorator(*args, **kwargs):
-        return loop.create_task(f(*args, **kwargs))
+        print(f.__name__)
+        return asyncio.run_coroutine_threadsafe(f(*args, **kwargs), bot.loop).result()
     return decorator
 
 import bot.secret as secret

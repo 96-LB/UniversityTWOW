@@ -6,7 +6,9 @@ from flask import render_template, abort, request, redirect, url_for
 from flask_discord import requires_authorization
 from core.web import app, discord
 from functools import wraps
+from web.logs import PREFIX
 from web.permissions import is_admin, requires_admin
+
 
 def is_page(page):
     try:
@@ -80,6 +82,20 @@ def application_post():
         })
         return redirect(url_for('application_page', page=1), 303)
 
+@app.route('/enroll')
+@requires_authorization
+def enroll():
+    data.set('application', {
+        'submitted': True
+    })
+    
+    classes = data.get('classes') or []
+    if 'ARG404' not in classes:
+        classes.append('ARG404')
+    data.set('classes', classes)
+    
+    return redirect(url_for('classes'), 303)
+
 ###
 
 @app.route('/application/<int:page>', methods=['GET', 'POST'])
@@ -142,9 +158,8 @@ def decision():
     major = data.get('page5').get('major', ['Undecided'])[0]
     
     #update their server roles
-    roles.remove_roles('APPLICANT', reason='viewed decision')
-    roles.add_roles('ENROLLED', reason='viewed decision')
-    roles.add_roles(major, reason='viewed decision')
+    if roles.remove_roles('APPLICANT', reason='viewed decision'):
+        roles.add_roles('ENROLLED', major, reason='viewed decision')
     
     return render_template('application/decision.html', name=name, major=major)
 
@@ -155,6 +170,8 @@ def decision():
 def accept():
     students = []
     for user in data.keys():
+        if user.startswith(PREFIX):
+            continue
         #checks if each user has a submitted application
         app = data.get('application', user=user)
         if app.get('submitted'):

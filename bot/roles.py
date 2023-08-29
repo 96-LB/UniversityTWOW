@@ -30,14 +30,19 @@ async def add_roles(*roles, user=None, reason=None):
         member = await bot.guild.fetch_member(data.get_id(user))
         roles = [bot.guild.get_role(ROLES[role.upper()]) for role in roles]
         await member.add_roles(*roles, reason=reason)
+        return True # success
     except NotFound as error:
         print(f'ERROR: User {data.get_id()} not found.\n{error}')
+        return False # failure
 
 @bot.task
 async def remove_roles(*roles, user=None, reason=None):
+    print('here!')
     try:
         member = await bot.guild.fetch_member(data.get_id(user))
         roles = [bot.guild.get_role(ROLES[role.upper()]) for role in roles]
         await member.remove_roles(*roles, reason=reason)
+        return True # success
     except NotFound as error:
         print(f'ERROR: User {data.get_id()} not found.\n{error}')
+        return False # failure
