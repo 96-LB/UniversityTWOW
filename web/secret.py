@@ -1,4 +1,4 @@
-import os, json, random, base64
+import json, random, base64
 import core.data as data
 import web.classes as classes
 import web.permissions as permissions
@@ -11,7 +11,8 @@ from flask_discord import requires_authorization
 from functools import wraps
 from time import time
 
-SECRETS = json.loads(os.environ['SECRETS'])
+with open('secrets.json') as f:
+    SECRETS = json.load(f)
 ARG404 = classes.class_list['ARG404']
 
 @app.route('/reset')
@@ -834,6 +835,7 @@ def arg_dark_vault_1(step, passed, timed):
 
 @arg_step('dark-vault', 2)
 def arg_dark_vault_2(step):
+    step['link']['text'] = step['link']['text'].replace('§', '')
     step.pop('end')
     return secret_page(step)
 

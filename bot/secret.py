@@ -75,7 +75,6 @@ async def init_state():
     global state, brb_points, cooldowns
     
     astroid_blacklist = ('admissions', 'staff', 'intro to collaborative efforts', 'alternate reality games')
-    # astroid_blacklist += ('the history of twows, and why it\'s all bullshit', 'world language twowing', 'handwriting', 'calculus iii', 'statistics and modeling', 'hosting a good twow', 'the art of art') # TODO: remove this
     
     categories = [i for i in await utwow.fetch_channels() if i.type == ChannelType.category]
     for category in categories:
@@ -100,7 +99,7 @@ async def init_state():
     cooldowns = state['cooldowns']
     
     await cellar.set_permissions(utwow.default_role, read_messages=False)
-    await channel.set_permissions(utwow.default_role, send_messages=False) # todo: remove read_messages=False
+    await channel.set_permissions(utwow.default_role, send_messages=False)
 
     async for member in utwow.fetch_members():
         if roles['undead'] in member.roles:
@@ -240,7 +239,7 @@ async def press_kaboom(interaction: Interaction):
     await asyncio.sleep(3)
     
     await channel.send(message)
-    await channel.set_permissions(utwow.default_role, send_messages=True) # todo: remove read_messages=False
+    await channel.set_permissions(utwow.default_role, send_messages=True)
     await interaction.channel.send(message)
 
 
@@ -342,8 +341,8 @@ async def sans(interaction: Interaction):
         messages = [
             'i hope youre finding my jokes humerus',
             r'\*drinks ketchup\*',
-            'gettttttt dunked on!!!'
-            '<https://www.youtube.com/watch?v=H01BwSD9eyQ>'
+            'gettttttt dunked on!!!',
+            '<https://www.youtube.com/watch?v=Z9yCzT3rR9k>'
         ]
         await send_sans(random.choice(messages))
         await interaction.response.send_message('Asked sans to tell a joke.')
@@ -440,7 +439,7 @@ async def snare(interaction: Interaction):
         for member in members:
             if member.id == professor:
                 await channel.send(f'A snare trap triggers and flings {member.mention} into the stratosphere!')
-                await member.kick('Flung into stratosphere.')
+                await member.kick(reason='Flung into stratosphere.')
 
 @command(6, 120)
 async def astroidinator(interaction: Interaction):
@@ -541,7 +540,7 @@ async def setup(bot):
             if re.search(r'\bfunny\b', message.content, re.IGNORECASE):
                 await send_sans('funny? more like humerus')
             if re.search(r'\bhumorous\b', message.content, re.IGNORECASE):
-                await send_sans('humerous? more like humerus')
+                await send_sans('humorous? more like humerus')
         
         if state['thenamesi']:
             if message.author.id == professors['h']:
