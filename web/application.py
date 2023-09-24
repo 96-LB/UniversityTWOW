@@ -84,14 +84,18 @@ def application_post():
 
 @app.route('/enroll')
 @requires_authorization
-def enroll():
-    data.set('application', {
-        'submitted': True
-    })
-    
+def enroll():    
     classes = data.get('classes') or []
     if 'ARG404' not in classes:
         classes.append('ARG404')
+
+    if data.get('application').get('accepted'):
+        roles.add_roles('ARG404', reason='Enrolled in ARG404.')
+    else:
+        data.set('application', {
+            'submitted': True
+        })
+    
     data.set('classes', classes)
     
     return redirect(url_for('classes'), 303)
@@ -156,10 +160,11 @@ def decision():
     #grab information from the application
     name = data.get('page1').get('name', [discord.fetch_user().username])[0]
     major = data.get('page5').get('major', ['Undecided'])[0]
+    classes = data.get('classes') or []
     
     #update their server roles
     if roles.remove_roles('APPLICANT', reason='viewed decision'):
-        roles.add_roles('ENROLLED', major, reason='viewed decision')
+        roles.add_roles('ENROLLED', major, *classes, reason='viewed decision')
     
     return render_template('application/decision.html', name=name, major=major)
 

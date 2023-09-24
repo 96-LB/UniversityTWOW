@@ -13,17 +13,15 @@
 <ul>
     {%- for class_ in classes %}
     <li>
-        <a href="{{url_for('class_page', class_id=class_['id']|replace('404', '440'))}}">{{class_['title']}}</a>
+        <a href="{{url_for('class_page', class_id=class_['id'])}}">{{class_['title']}}</a>
     </li>
     {%- endfor %}
 </ul>
-    {%- if is_professor() %}
 <hr>
 <div>
     <a href="{{url_for('transcript')}}">
         Unofficial transcripts are now available!
     </a>
 <div>
-    {%- endif %}
 {%- endif %}
 {% endblock %}

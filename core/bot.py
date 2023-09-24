@@ -15,7 +15,6 @@ def task(f):
     #turns an asynchronous coroutine function into a task
     @wraps(f)
     def decorator(*args, **kwargs):
-        print(f.__name__)
         return asyncio.run_coroutine_threadsafe(f(*args, **kwargs), bot.loop).result()
     return decorator
 

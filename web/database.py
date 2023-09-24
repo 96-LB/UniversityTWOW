@@ -1,6 +1,7 @@
 import json
 import core.data as data
 from core.web import app
+from web.classes import class_list
 from web.permissions import requires_admin
 from web.logs import PREFIX
 from replit import db
@@ -13,7 +14,7 @@ def database(filter_type):
         filter_func = {
             'all': lambda x: True,
             'students': lambda x: x.isdigit(),
-            'classes': lambda x: 6 <= len(x) <= 7 and x[-3:].isdigit(),
+            'classes': lambda x: x in class_list,
             'logs': lambda x: x.startswith(PREFIX)
         }[filter_type]
     except:

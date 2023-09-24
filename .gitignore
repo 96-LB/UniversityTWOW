@@ -8,5 +8,3 @@ replit.nix
 /data/
 *.egg-info
 node_modules
-
-secret*

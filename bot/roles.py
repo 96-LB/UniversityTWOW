@@ -37,7 +37,6 @@ async def add_roles(*roles, user=None, reason=None):
 
 @bot.task
 async def remove_roles(*roles, user=None, reason=None):
-    print('here!')
     try:
         member = await bot.guild.fetch_member(data.get_id(user))
         roles = [bot.guild.get_role(ROLES[role.upper()]) for role in roles]

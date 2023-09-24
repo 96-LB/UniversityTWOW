@@ -26,7 +26,12 @@ def get_logs():
     obj = {}
     keys = [key for key in data.keys() if key.startswith(PREFIX)]
     keys.sort()
-
+    
+    #dear god the logs are long now
+    limit = request.args.get('limit', type=int)
+    if limit and 0 < limit < len(keys):
+        keys = keys[-(limit + 1):]
+    
     #iterates over all the dates to build a json object
     for key in keys:
         value = []
